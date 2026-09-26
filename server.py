@@ -44,9 +44,10 @@ PUBLIC_BASE_URL = "https://akil-vltd.onrender.com"
 # FIXED VLTD DETAILS
 # ============================================================
 
-DEVICE_MODEL = "AKIL 140"
+DEVICE_MANUFACTURER = "AKIL ENTERPRISES"
+DEVICE_MODEL = "AKEEL 140"
 
-SIM_PROVIDER = "navspire"
+SIM_PROVIDER = "Navspire"
 
 SIM_VALIDITY = "1 Year"
 
@@ -715,7 +716,37 @@ class Handler(
 
             # ----------------------------------------------
             # VLTD
+            # Fixed manufacturer/model.
+            # Serial / IMEI / ICCID come from the form.
             # ----------------------------------------------
+
+            "device": {
+
+                "manufacturer":
+                    DEVICE_MANUFACTURER,
+
+                "model":
+                    DEVICE_MODEL,
+
+                "serial":
+                    device_serial,
+
+                "imei":
+                    device_imei,
+
+                "iccid":
+                    device_iccid
+
+            },
+
+            # Keep these flat fields for compatibility
+            # with any older certificate template.
+
+            "device_manufacturer":
+                DEVICE_MANUFACTURER,
+
+            "device_model":
+                DEVICE_MODEL,
 
             "device_serial":
                 device_serial,
@@ -725,9 +756,6 @@ class Handler(
 
             "device_iccid":
                 device_iccid,
-
-            "device_model":
-                DEVICE_MODEL,
 
 
             # ----------------------------------------------
@@ -870,6 +898,11 @@ if __name__ == "__main__":
     )
 
     print()
+
+    print(
+        "Manufacturer        :",
+        DEVICE_MANUFACTURER
+    )
 
     print(
         "Device Model        :",
