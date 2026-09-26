@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        VLTD Certificate Generator
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <div class="header">
+
+        <h1>
+            VLTD CERTIFICATE GENERATOR
+        </h1>
+
+        <p>
+            Vehicle Location Tracking Device Certificate
+        </p>
+
+    </div>
+
+
+    <form
+        method="POST"
+        action="/create"
+        id="certificateForm"
+    >
+
+
+        <!-- ================================================= -->
+        <!-- VEHICLE DETAILS -->
+        <!-- ================================================= -->
+
+        <div class="section">
+
+            <h2>
+                1. Vehicle Details
+            </h2>
+
+
+            <div class="form-grid">
+
+
+                <div class="field">
+
+                    <label>
+                        Vehicle Registration Number *
+                    </label>
+
+                    <input
+                        type="text"
+                        name="vehicle_registration"
+                        id="vehicle_registration"
+                        maxlength="10"
+                        minlength="10"
+                        pattern="[A-Za-z0-9]{10}"
+                        placeholder="Example: TN57AB1234"
+                        required
+                    >
+
+                    <small>
+                        Exactly 10 letters/numbers
+                    </small>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Vehicle Category *
+                    </label>
+
+                    <input
+                        type="text"
+                        name="vehicle_category"
+                        placeholder="Example: Mining Vehicle"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Vehicle Type *
+                    </label>
+
+                    <input
+                        type="text"
+                        name="vehicle_type"
+                        placeholder="Example: Heavy Motor Vehicle"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Owner Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        name="owner_name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        District / State *
+                    </label>
+
+                    <input
+                        type="text"
+                        name="district_state"
+                        placeholder="Example: Kanyakumari, Tamil Nadu"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Installation Date *
+                    </label>
+
+                    <input
+                        type="date"
+                        name="installation_date"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Activation Date *
+                    </label>
+
+                    <input
+                        type="date"
+                        name="activation_date"
+                        required
+                    >
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- VLTD DEVICE DETAILS -->
+        <!-- ================================================= -->
+
+        <div class="section">
+
+            <h2>
+                2. VLTD Device Details
+            </h2>
+
+
+            <div class="form-grid">
+
+
+                <div class="field">
+
+                    <label>
+                        Serial Number *
+                    </label>
+
+                    <input
+                        type="text"
+                        name="device_serial"
+                        id="device_serial"
+                        placeholder="Enter Serial Number"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        IMEI Number *
+                    </label>
+
+                    <input
+                        type="text"
+                        name="device_imei"
+                        id="device_imei"
+                        inputmode="numeric"
+                        placeholder="Enter IMEI Number"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        ICCID Number *
+                    </label>
+
+                    <input
+                        type="text"
+                        name="device_iccid"
+                        id="device_iccid"
+                        inputmode="numeric"
+                        placeholder="Enter ICCID Number"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Device Model
+                    </label>
+
+                    <input
+                        type="text"
+                        value="AKIL 140"
+                        readonly
+                        class="fixed-field"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        SIM Service Provider
+                    </label>
+
+                    <input
+                        type="text"
+                        value="navspire"
+                        readonly
+                        class="fixed-field"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        SIM Validity
+                    </label>
+
+                    <input
+                        type="text"
+                        value="1 Year"
+                        readonly
+                        class="fixed-field"
+                    >
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================================================= -->
+        <!-- SUBMIT -->
+        <!-- ================================================= -->
+
+        <div class="submit-area">
+
+            <button
+                type="submit"
+                class="generate-button"
+            >
+                GENERATE VLTD CERTIFICATE
+            </button>
+
+        </div>
+
+
+    </form>
+
+
+</div>
+
+
+<script
+    src="/static/app.js"
+></script>
+
+
+</body>
+
+</html>
