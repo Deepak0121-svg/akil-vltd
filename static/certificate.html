@@ -1,441 +1,553 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<title>VLTD Certificate</title>
+    <title>VLTD Installation Certificate</title>
 
+    <style>
 
-<style>
+        /* =====================================================
+           A4 PAGE
+        ===================================================== */
 
-/* =========================================================
-   A4 PAGE
-   ========================================================= */
+        @page {
+            size: A4;
+            margin: 0;
+        }
 
-@page {
-    size: A4;
-    margin: 0;
-}
 
+        * {
+            box-sizing: border-box;
+        }
 
-* {
-    box-sizing: border-box;
-}
 
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: #eeeeee;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #111111;
+        }
 
-html,
-body {
 
-    margin: 0;
-    padding: 0;
+        body {
+            min-height: 100vh;
+        }
 
-    width: 210mm;
-    min-height: 297mm;
 
-    background: #eeeeee;
+        /* =====================================================
+           A4 CERTIFICATE
+        ===================================================== */
 
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+        .certificate {
 
-    color: #111;
+            width: 210mm;
+            height: 297mm;
 
-}
+            margin: 10px auto;
 
+            background: #ffffff;
 
-/* =========================================================
-   CERTIFICATE
-   ========================================================= */
+            position: relative;
 
-.certificate {
+            padding: 12mm 15mm 10mm 15mm;
 
-    width: 210mm;
-    height: 297mm;
+            overflow: hidden;
 
-    margin: 0 auto;
+            border: 1px solid #222;
+        }
 
-    background: white;
 
-    padding:
-        9mm
-        10mm
-        8mm
-        10mm;
+        /* =====================================================
+           OUTER BORDER
+        ===================================================== */
 
-    border: 1px solid #222;
+        .certificate::before {
 
-    position: relative;
+            content: "";
 
-    overflow: hidden;
+            position: absolute;
 
-}
+            left: 4mm;
+            right: 4mm;
+            top: 4mm;
+            bottom: 4mm;
 
+            border: 2px solid #111111;
 
-/* =========================================================
-   HEADER
-   ========================================================= */
+            pointer-events: none;
+        }
 
-.header {
 
-    text-align: center;
+        /* =====================================================
+           HEADER
+        ===================================================== */
 
-    border-bottom: 2px solid #111;
+        .header {
 
-    padding-bottom: 4mm;
+            text-align: center;
 
-    margin-bottom: 3mm;
+            position: relative;
 
-}
+            z-index: 2;
 
+            margin-top: 1mm;
 
-.header h1 {
+            margin-bottom: 5mm;
+        }
 
-    margin: 0;
 
-    font-size: 24px;
+        .company-name {
 
-    line-height: 1.15;
+            font-size: 21px;
 
-    font-weight: 700;
+            font-weight: 700;
 
-}
+            letter-spacing: 0.6px;
 
+            margin-bottom: 2px;
+        }
 
-.header h2 {
 
-    margin: 4px 0 0;
+        .company-subtitle {
 
-    font-size: 15px;
+            font-size: 11px;
 
-    line-height: 1.2;
+            font-weight: 600;
 
-    font-weight: 700;
+            margin-bottom: 5px;
+        }
 
-}
 
+        .certificate-title {
 
-.certificate-id {
+            font-size: 24px;
 
-    text-align: right;
+            font-weight: 800;
 
-    font-size: 11px;
+            letter-spacing: 1px;
 
-    margin-bottom: 3mm;
+            text-transform: uppercase;
 
-}
+            margin: 3px 0;
+        }
 
 
-/* =========================================================
-   INTRODUCTION
-   ========================================================= */
+        .certificate-subtitle {
 
-.intro {
+            font-size: 14px;
 
-    font-size: 11.5px;
+            font-weight: 600;
 
-    line-height: 1.4;
+            margin-top: 2px;
+        }
 
-    text-align: justify;
 
-    margin-bottom: 3mm;
+        .header-line {
 
-}
+            width: 78%;
 
+            height: 2px;
 
-/* =========================================================
-   SECTION HEADINGS
-   ========================================================= */
+            background: #111111;
 
-.section-title {
+            margin: 5px auto 0;
+        }
 
-    font-size: 13px;
 
-    font-weight: 700;
+        /* =====================================================
+           CERTIFICATE INTRO
+        ===================================================== */
 
-    background: #eeeeee;
+        .intro {
 
-    border: 1px solid #333;
+            position: relative;
 
-    padding: 5px 8px;
+            z-index: 2;
 
-    margin-top: 2.5mm;
+            font-size: 11.5px;
 
-}
+            line-height: 1.48;
 
+            text-align: justify;
 
-/* =========================================================
-   TABLE
-   ========================================================= */
+            margin: 0 2mm 5mm 2mm;
+        }
 
-table {
 
-    width: 100%;
+        /* =====================================================
+           SECTION
+        ===================================================== */
 
-    border-collapse: collapse;
+        .section {
 
-    table-layout: fixed;
+            position: relative;
 
-}
+            z-index: 2;
 
+            margin-top: 4mm;
 
-td {
+            margin-left: 2mm;
 
-    border: 1px solid #444;
+            margin-right: 2mm;
+        }
 
-    padding: 5px 8px;
 
-    font-size: 12px;
+        .section-title {
 
-    line-height: 1.25;
+            font-size: 13px;
 
-    vertical-align: middle;
+            font-weight: 800;
 
-}
+            text-transform: uppercase;
 
+            letter-spacing: 0.5px;
 
-td.label {
+            border-bottom: 1.5px solid #111111;
 
-    width: 38%;
+            padding-bottom: 2px;
 
-    font-weight: 700;
+            margin-bottom: 4px;
+        }
 
-    background: #f7f7f7;
 
-}
+        /* =====================================================
+           DETAILS WITHOUT TABLE
+        ===================================================== */
 
+        .details {
 
-/* =========================================================
-   INSTALLATION PARAGRAPH
-   ========================================================= */
+            display: grid;
 
-.paragraph {
+            grid-template-columns: 1fr 1fr;
 
-    border: 1px solid #444;
+            column-gap: 12mm;
 
-    border-top: none;
+            row-gap: 2.5mm;
 
-    padding: 7px 9px;
+            font-size: 11.5px;
 
-    font-size: 11.5px;
+            line-height: 1.3;
+        }
 
-    line-height: 1.38;
 
-    text-align: justify;
+        .detail {
 
-}
+            display: flex;
 
+            align-items: baseline;
 
-/* =========================================================
-   BOTTOM AREA
-   ========================================================= */
+            min-width: 0;
+        }
 
-.bottom-area {
 
-    display: flex;
+        .label {
 
-    justify-content: space-between;
+            font-weight: 700;
 
-    align-items: flex-end;
+            white-space: nowrap;
 
-    margin-top: 5mm;
+            margin-right: 5px;
+        }
 
-}
 
+        .value {
 
-/* =========================================================
-   QR
-   ========================================================= */
+            font-weight: 500;
 
-.qr-box {
+            word-break: break-word;
+        }
 
-    width: 48mm;
 
-    text-align: center;
+        /* =====================================================
+           FULL WIDTH DETAIL
+        ===================================================== */
 
-}
+        .full {
 
+            grid-column: 1 / -1;
+        }
 
-.qr-box img {
 
-    width: 38mm;
+        /* =====================================================
+           INSTALLATION / INTEGRATION TEXT
+        ===================================================== */
 
-    height: 38mm;
+        .paragraph {
 
-    display: block;
+            position: relative;
 
-    margin: 0 auto;
+            z-index: 2;
 
-}
+            font-size: 11.5px;
 
+            line-height: 1.5;
 
-.qr-text {
+            text-align: justify;
 
-    margin-top: 3px;
+            margin: 3mm 2mm 0 2mm;
+        }
 
-    font-size: 9px;
 
-    line-height: 1.2;
+        /* =====================================================
+           DECLARATION
+        ===================================================== */
 
-    font-weight: 600;
+        .declaration {
 
-}
+            position: relative;
 
+            z-index: 2;
 
-/* =========================================================
-   SIGNATURE
-   ========================================================= */
+            font-size: 11.5px;
 
-.signature {
+            line-height: 1.5;
 
-    width: 60mm;
+            text-align: justify;
 
-    text-align: center;
+            margin: 3mm 2mm 0 2mm;
 
-    font-size: 11px;
+            font-weight: 600;
+        }
 
-    font-weight: 600;
 
-}
+        /* =====================================================
+           BOTTOM AREA
+        ===================================================== */
 
+        .bottom-area {
 
-.signature-line {
+            position: absolute;
 
-    border-top: 1px solid #222;
+            left: 15mm;
 
-    padding-top: 5px;
+            right: 15mm;
 
-    margin-top: 19mm;
+            bottom: 11mm;
 
-}
+            z-index: 2;
 
+            display: flex;
 
-/* =========================================================
-   FOOTER
-   ========================================================= */
+            justify-content: space-between;
 
-.footer {
+            align-items: flex-end;
+        }
 
-    position: absolute;
 
-    left: 10mm;
+        /* =====================================================
+           SIGNATURE
+        ===================================================== */
 
-    right: 10mm;
+        .signature {
 
-    bottom: 4mm;
+            width: 65%;
 
-    border-top: 1px solid #888;
+            font-size: 10.5px;
 
-    padding-top: 2px;
+            line-height: 1.4;
+        }
 
-    text-align: center;
 
-    font-size: 8px;
+        .signature-space {
 
-}
+            height: 14mm;
+        }
 
 
-/* =========================================================
-   PRINT BUTTON
-   ========================================================= */
+        .signature-line {
 
-.print-button {
+            width: 58mm;
 
-    position: fixed;
+            border-top: 1px solid #111111;
 
-    top: 15px;
+            margin-bottom: 3px;
+        }
 
-    right: 15px;
 
-    padding: 10px 18px;
+        .signature-title {
 
-    border: none;
+            font-weight: 700;
 
-    background: #111;
+            font-size: 11px;
+        }
 
-    color: white;
 
-    cursor: pointer;
+        /* =====================================================
+           QR
+        ===================================================== */
 
-    font-weight: bold;
+        .qr-area {
 
-    font-size: 14px;
+            width: 38mm;
 
-    border-radius: 4px;
+            text-align: center;
+        }
 
-    z-index: 1000;
 
-}
+        .qr-area img {
 
+            width: 32mm;
 
-@media print {
+            height: 32mm;
 
-    html,
-    body {
+            display: block;
 
-        width: 210mm;
+            margin: 0 auto 2mm;
 
-        height: 297mm;
+            image-rendering: auto;
+        }
 
-        background: white;
 
-    }
+        .qr-text {
 
+            font-size: 8px;
 
-    .certificate {
+            font-weight: 700;
 
-        width: 210mm;
+            line-height: 1.2;
+        }
 
-        height: 297mm;
 
-        margin: 0;
+        /* =====================================================
+           CERTIFICATE ID
+        ===================================================== */
 
-        border: none;
+        .certificate-number {
 
-        box-shadow: none;
+            position: absolute;
 
-        page-break-before: avoid;
+            bottom: 4.5mm;
 
-        page-break-after: avoid;
+            left: 15mm;
 
-        page-break-inside: avoid;
+            right: 15mm;
 
-    }
+            text-align: center;
 
+            font-size: 8.5px;
 
-    .print-button {
+            z-index: 3;
+        }
 
-        display: none;
 
-    }
+        .certificate-number strong {
 
-}
+            font-weight: 800;
+        }
 
 
-/* =========================================================
-   SCREEN
-   ========================================================= */
+        /* =====================================================
+           PRINT BUTTON
+        ===================================================== */
 
-@media screen {
+        .print-button {
 
-    .certificate {
+            position: fixed;
 
-        box-shadow:
-            0 2px 15px
-            rgba(0, 0, 0, 0.15);
+            top: 15px;
 
-    }
+            right: 15px;
 
-}
+            z-index: 1000;
 
-</style>
+            border: none;
+
+            background: #111111;
+
+            color: white;
+
+            padding: 10px 18px;
+
+            border-radius: 5px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        .print-button:hover {
+
+            opacity: 0.85;
+        }
+
+
+        /* =====================================================
+           PRINT
+        ===================================================== */
+
+        @media print {
+
+            html,
+            body {
+
+                width: 210mm;
+
+                height: 297mm;
+
+                background: white;
+
+                margin: 0;
+
+                padding: 0;
+            }
+
+
+            .certificate {
+
+                margin: 0;
+
+                border: none;
+
+                width: 210mm;
+
+                height: 297mm;
+
+                box-shadow: none;
+            }
+
+
+            .print-button {
+
+                display: none !important;
+            }
+        }
+
+
+        /* =====================================================
+           SMALL SCREEN
+        ===================================================== */
+
+        @media screen and (max-width: 850px) {
+
+            body {
+
+                background: #eeeeee;
+
+            }
+
+
+            .certificate {
+
+                transform-origin: top center;
+
+                margin: 10px auto;
+
+            }
+        }
+
+    </style>
 
 </head>
 
@@ -447,312 +559,372 @@ td.label {
     class="print-button"
     onclick="window.print()"
 >
-    PRINT
+    Print Certificate
 </button>
 
 
 <div class="certificate">
 
 
-<!-- =====================================================
-     HEADER
-     ===================================================== -->
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
-<div class="header">
+    <div class="header">
 
-    <h1>
-        VEHICLE LOCATION TRACKING DEVICE
-    </h1>
+        <div class="company-name">
+            AKIL ENTERPRISES
+        </div>
 
-    <h2>
-        VLTD INSTALLATION &amp; ACTIVATION CERTIFICATE
-    </h2>
+        <div class="company-subtitle">
+            VEHICLE LOCATION TRACKING DEVICE (VLTD)
+        </div>
 
-</div>
+        <div class="certificate-title">
+            INSTALLATION CERTIFICATE
+        </div>
 
+        <div class="certificate-subtitle">
+            Mining Vehicle VLTD Installation &amp; Activation
+        </div>
 
-<div class="certificate-id">
+        <div class="header-line"></div>
 
-    <strong>Certificate ID:</strong>
+    </div>
 
-    <span id="certificateId"></span>
 
-</div>
+    <!-- =====================================================
+         INTRODUCTION
+    ====================================================== -->
 
+    <div class="intro">
 
-<!-- =====================================================
-     INTRODUCTION
-     ===================================================== -->
+        This is to certify that the Vehicle Location Tracking
+        Device (VLTD) specified below has been installed and
+        activated in the above-mentioned vehicle for vehicle
+        tracking, monitoring and regulatory compliance purposes.
 
-<div class="intro">
+    </div>
 
-    This is to certify that the Vehicle Location
-    Tracking Device (VLTD) compliant with
-    Automotive Industry Standard (AIS-140), as
-    prescribed under the Central Motor Vehicle Rules,
-    has been installed and activated in the
-    below-mentioned Mining Vehicle.
 
-</div>
+    <!-- =====================================================
+         VEHICLE DETAILS
+    ====================================================== -->
 
+    <div class="section">
 
-<!-- =====================================================
-     VEHICLE DETAILS
-     ===================================================== -->
+        <div class="section-title">
+            Vehicle Details
+        </div>
 
-<div class="section-title">
 
-    1. VEHICLE DETAILS
+        <div class="details">
 
-</div>
+            <div class="detail">
 
+                <span class="label">
+                    Registration No.:
+                </span>
 
-<table>
+                <span
+                    class="value"
+                    id="vehicle_registration"
+                ></span>
 
-<tr>
+            </div>
 
-    <td class="label">
-        Vehicle Registration Number
-    </td>
 
-    <td id="vehicleRegistration"></td>
+            <div class="detail">
 
-</tr>
+                <span class="label">
+                    Vehicle Category:
+                </span>
 
+                <span
+                    class="value"
+                    id="vehicle_category"
+                ></span>
 
-<tr>
+            </div>
 
-    <td class="label">
-        Vehicle Category
-    </td>
 
-    <td id="vehicleCategory"></td>
+            <div class="detail">
 
-</tr>
+                <span class="label">
+                    Vehicle Type:
+                </span>
 
+                <span
+                    class="value"
+                    id="vehicle_type"
+                ></span>
 
-<tr>
+            </div>
 
-    <td class="label">
-        Vehicle Type
-    </td>
 
-    <td id="vehicleType"></td>
+            <div class="detail">
 
-</tr>
+                <span class="label">
+                    Owner Name:
+                </span>
 
+                <span
+                    class="value"
+                    id="owner_name"
+                ></span>
 
-<tr>
+            </div>
 
-    <td class="label">
-        Owner Name
-    </td>
 
-    <td id="ownerName"></td>
+            <div class="detail full">
 
-</tr>
+                <span class="label">
+                    District / State:
+                </span>
 
+                <span
+                    class="value"
+                    id="district_state"
+                ></span>
 
-<tr>
-
-    <td class="label">
-        District / State
-    </td>
-
-    <td id="districtState"></td>
-
-</tr>
-
-</table>
-
-
-<!-- =====================================================
-     DEVICE DETAILS
-     ===================================================== -->
-
-<div class="section-title">
-
-    2. VLTD DEVICE DETAILS
-
-</div>
-
-
-<table>
-
-<tr>
-
-    <td class="label">
-        Device Model
-    </td>
-
-    <td>
-        AKEEL 140
-    </td>
-
-</tr>
-
-
-<tr>
-
-    <td class="label">
-        Serial Number
-    </td>
-
-    <td id="deviceSerial"></td>
-
-</tr>
-
-
-<tr>
-
-    <td class="label">
-        IMEI Number
-    </td>
-
-    <td id="deviceImei"></td>
-
-</tr>
-
-
-<tr>
-
-    <td class="label">
-        ICCID Number
-    </td>
-
-    <td id="deviceIccid"></td>
-
-</tr>
-
-</table>
-
-
-<!-- =====================================================
-     CONNECTIVITY
-     ===================================================== -->
-
-<div class="section-title">
-
-    3. CONNECTIVITY / ACTIVATION DETAILS
-
-</div>
-
-
-<table>
-
-<tr>
-
-    <td class="label">
-        SIM Service Provider
-    </td>
-
-    <td>
-        Navspire
-    </td>
-
-</tr>
-
-
-<tr>
-
-    <td class="label">
-        SIM Validity
-    </td>
-
-    <td>
-        1 Year
-    </td>
-
-</tr>
-
-
-<tr>
-
-    <td class="label">
-        Installation Date
-    </td>
-
-    <td id="installationDate"></td>
-
-</tr>
-
-
-<tr>
-
-    <td class="label">
-        Activation Date
-    </td>
-
-    <td id="activationDate"></td>
-
-</tr>
-
-</table>
-
-
-<!-- =====================================================
-     INSTALLATION / INTEGRATION
-     ===================================================== -->
-
-<div class="section-title">
-
-    4. VLTD INSTALLATION &amp; INTEGRATION
-
-</div>
-
-
-<div class="paragraph">
-
-    The Vehicle Location Tracking Device (VLTD) has
-    been installed and activated in the above-mentioned
-    Mining Vehicle in accordance with AIS-140
-    specifications and applicable statutory guidelines.
-    The VLTD installed in this vehicle shall be integrated
-    with the MiMaS (Mining Monitoring and Management
-    System) Portal, as directed by the Mining / Transport
-    Authorities, for the purpose of mining vehicle
-    tracking, safety monitoring, permit compliance,
-    and regulatory enforcement.
-
-    <br><br>
-
-    This certificate is issued for Mining Vehicle VLTD
-    compliance and monitoring purposes, in accordance
-    with directions issued by the competent authorities.
-
-</div>
-
-
-<!-- =====================================================
-     QR + SIGNATURE
-     ===================================================== -->
-
-<div class="bottom-area">
-
-
-    <div class="qr-box">
-
-        <img
-            id="qrCode"
-            alt="Certificate QR Code"
-        >
-
-        <div class="qr-text">
-
-            Scan QR code to verify certificate
+            </div>
 
         </div>
 
     </div>
 
 
-    <div class="signature">
+    <!-- =====================================================
+         VLTD DEVICE DETAILS
+    ====================================================== -->
 
-        <div class="signature-line">
+    <div class="section">
 
-            Authorized Signatory
+        <div class="section-title">
+            VLTD Device Details
+        </div>
+
+
+        <div class="details">
+
+            <div class="detail">
+
+                <span class="label">
+                    Device Model:
+                </span>
+
+                <span
+                    class="value"
+                    id="device_model"
+                >
+                    AKIL 140
+                </span>
+
+            </div>
+
+
+            <div class="detail">
+
+                <span class="label">
+                    Serial Number:
+                </span>
+
+                <span
+                    class="value"
+                    id="device_serial"
+                ></span>
+
+            </div>
+
+
+            <div class="detail">
+
+                <span class="label">
+                    IMEI:
+                </span>
+
+                <span
+                    class="value"
+                    id="device_imei"
+                ></span>
+
+            </div>
+
+
+            <div class="detail">
+
+                <span class="label">
+                    ICCID:
+                </span>
+
+                <span
+                    class="value"
+                    id="device_iccid"
+                ></span>
+
+            </div>
+
+
+            <div class="detail">
+
+                <span class="label">
+                    SIM Provider:
+                </span>
+
+                <span
+                    class="value"
+                    id="sim_provider"
+                >
+                    navspire
+                </span>
+
+            </div>
+
+
+            <div class="detail">
+
+                <span class="label">
+                    SIM Validity:
+                </span>
+
+                <span
+                    class="value"
+                    id="sim_validity"
+                >
+                    1 Year
+                </span>
+
+            </div>
 
         </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         INSTALLATION DETAILS
+    ====================================================== -->
+
+    <div class="section">
+
+        <div class="section-title">
+            Installation Details
+        </div>
+
+
+        <div class="details">
+
+            <div class="detail">
+
+                <span class="label">
+                    Installation Date:
+                </span>
+
+                <span
+                    class="value"
+                    id="installation_date"
+                ></span>
+
+            </div>
+
+
+            <div class="detail">
+
+                <span class="label">
+                    Activation Date:
+                </span>
+
+                <span
+                    class="value"
+                    id="activation_date"
+                ></span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         INTEGRATION PARAGRAPH
+    ====================================================== -->
+
+    <div class="paragraph">
+
+        The Vehicle Location Tracking Device (VLTD) has been
+        installed and activated in the above-mentioned Mining
+        Vehicle in accordance with AIS-140 specifications and
+        applicable statutory guidelines. The VLTD installed in
+        this vehicle shall be integrated with the MiMaS
+        (Mining Monitoring and Management System) Portal, as
+        directed by the Mining / Transport Authorities, for
+        the purpose of mining vehicle tracking, safety
+        monitoring, permit compliance, and regulatory
+        enforcement.
+
+    </div>
+
+
+    <div class="declaration">
+
+        This certificate is issued for Mining Vehicle VLTD
+        compliance and monitoring purposes, in accordance with
+        directions issued by the competent authorities.
+
+    </div>
+
+
+    <!-- =====================================================
+         BOTTOM
+    ====================================================== -->
+
+    <div class="bottom-area">
+
+
+        <div class="signature">
+
+            <div class="signature-space"></div>
+
+            <div class="signature-line"></div>
+
+            <div class="signature-title">
+                Authorized Signatory
+            </div>
+
+            <div>
+                AKIL ENTERPRISES
+            </div>
+
+        </div>
+
+
+        <div class="qr-area">
+
+            <img
+                id="qr_code"
+                src=""
+                alt="Certificate QR Code"
+            >
+
+            <div class="qr-text">
+                Scan to verify certificate
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         CERTIFICATE NUMBER
+    ====================================================== -->
+
+    <div class="certificate-number">
+
+        Certificate ID:
+        <strong id="certificate_id"></strong>
 
     </div>
 
@@ -760,114 +932,188 @@ td.label {
 </div>
 
 
-<!-- =====================================================
-     FOOTER
-     ===================================================== -->
-
-<div class="footer">
-
-    VLTD Installation &amp; Activation Certificate
-
-</div>
-
-
-</div>
-
+<!-- =========================================================
+     CERTIFICATE DATA
+     SERVER.PY REPLACES __CERT_DATA__
+========================================================= -->
 
 <script>
 
-const certificateData =
-    __CERT_DATA__;
+    const certificateData = __CERT_DATA__;
 
 
-/* Certificate ID */
+    /* =======================================================
+       SAFE TEXT SETTER
+    ======================================================= */
 
-document.getElementById(
-    "certificateId"
-).textContent =
-    certificateData.certificate_id;
+    function setText(id, value) {
 
+        const element =
+            document.getElementById(id);
 
-/* Vehicle */
+        if (!element) {
+            return;
+        }
 
-document.getElementById(
-    "vehicleRegistration"
-).textContent =
-    certificateData.vehicle_registration;
-
-
-document.getElementById(
-    "vehicleCategory"
-).textContent =
-    certificateData.vehicle_category;
-
-
-document.getElementById(
-    "vehicleType"
-).textContent =
-    certificateData.vehicle_type;
+        element.textContent =
+            value === undefined ||
+            value === null ||
+            value === ""
+                ? "-"
+                : value;
+    }
 
 
-document.getElementById(
-    "ownerName"
-).textContent =
-    certificateData.owner_name;
+    /* =======================================================
+       VEHICLE
+    ======================================================= */
+
+    setText(
+        "vehicle_registration",
+        certificateData.vehicle_registration
+    );
 
 
-document.getElementById(
-    "districtState"
-).textContent =
-    certificateData.district_state;
+    setText(
+        "vehicle_category",
+        certificateData.vehicle_category
+    );
 
 
-/* Device */
-
-document.getElementById(
-    "deviceSerial"
-).textContent =
-    certificateData.device_serial;
+    setText(
+        "vehicle_type",
+        certificateData.vehicle_type
+    );
 
 
-document.getElementById(
-    "deviceImei"
-).textContent =
-    certificateData.device_imei;
+    setText(
+        "owner_name",
+        certificateData.owner_name
+    );
 
 
-document.getElementById(
-    "deviceIccid"
-).textContent =
-    certificateData.device_iccid;
+    setText(
+        "district_state",
+        certificateData.district_state
+    );
 
 
-/* Dates */
+    /* =======================================================
+       DEVICE
+    ======================================================= */
 
-document.getElementById(
-    "installationDate"
-).textContent =
-    certificateData.installation_date;
-
-
-document.getElementById(
-    "activationDate"
-).textContent =
-    certificateData.activation_date;
+    const device =
+        certificateData.device || {};
 
 
-/* QR */
+    setText(
+        "device_model",
+        device.model || "AKIL 140"
+    );
 
-document.getElementById(
-    "qrCode"
-).src =
-    "/qr/"
-    +
-    encodeURIComponent(
+
+    setText(
+        "device_serial",
+        device.serial
+    );
+
+
+    setText(
+        "device_imei",
+        device.imei
+    );
+
+
+    setText(
+        "device_iccid",
+        device.iccid
+    );
+
+
+    /* =======================================================
+       SIM
+    ======================================================= */
+
+    setText(
+        "sim_provider",
+        certificateData.sim_provider || "navspire"
+    );
+
+
+    let simValidity =
+        certificateData.sim_validity;
+
+
+    if (
+        simValidity === "1" ||
+        simValidity === 1
+    ) {
+
+        simValidity = "1 Year";
+
+    }
+
+
+    setText(
+        "sim_validity",
+        simValidity || "1 Year"
+    );
+
+
+    /* =======================================================
+       DATES
+    ======================================================= */
+
+    setText(
+        "installation_date",
+        certificateData.installation_date
+    );
+
+
+    setText(
+        "activation_date",
+        certificateData.activation_date
+    );
+
+
+    /* =======================================================
+       CERTIFICATE ID
+    ======================================================= */
+
+    setText(
+        "certificate_id",
         certificateData.certificate_id
     );
+
+
+    /* =======================================================
+       QR CODE
+       IMPORTANT:
+       Uses the current public Render host.
+
+       Example:
+       /qr/CCD71F97B3E6
+    ======================================================= */
+
+    const qrImage =
+        document.getElementById("qr_code");
+
+
+    if (
+        qrImage &&
+        certificateData.certificate_id
+    ) {
+
+        qrImage.src =
+            "/qr/" +
+            encodeURIComponent(
+                certificateData.certificate_id
+            );
+
+    }
 
 </script>
 
 
 </body>
-
 </html>
