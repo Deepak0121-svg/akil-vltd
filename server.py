@@ -31,7 +31,7 @@ PORT = int(os.environ.get("PORT", "8090"))
 # ============================================================
 
 # For testing on the same computer:
-PUBLIC_BASE_URL = "http://localhost:8090"
+PUBLIC_BASE_URL = "https://akil-vltd.onrender.com"
 
 # If QR must be scanned from a phone on the same Wi-Fi,
 # replace localhost with your computer's LAN IP.
