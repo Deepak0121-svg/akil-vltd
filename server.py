@@ -107,7 +107,9 @@ def get_db():
 # STATIC FILE READER
 # ============================================================
 
-def read_static_file(filename):
+def read_static_file(
+    filename
+):
 
     path = os.path.join(
         STATIC_DIR,
@@ -163,7 +165,9 @@ def send_response(
 # POST FORM PARSER
 # ============================================================
 
-def parse_post(handler):
+def parse_post(
+    handler
+):
 
     content_length = int(
         handler.headers.get(
@@ -189,27 +193,37 @@ def parse_post(handler):
 
 
 # ============================================================
-# ALPHANUMERIC VALIDATOR
+# DEVICE VALUE VALIDATOR
 # ============================================================
 
-def is_exact_25_alphanumeric(value):
+def is_alphanumeric(
+    value
+):
 
     """
-    Accept exactly 25 characters.
+    Accepts any length.
 
     Allowed:
         A-Z
         a-z
         0-9
 
-    Lowercase letters are converted to uppercase
-    before this function is called.
+    Minimum:
+        1 character
+
+    No spaces.
+    No special characters.
     """
 
-    if len(value) != 25:
+    if not value:
+
         return False
 
-    return value.isascii() and value.isalnum()
+
+    return (
+        value.isascii()
+        and value.isalnum()
+    )
 
 
 # ============================================================
@@ -220,11 +234,14 @@ class Handler(
     BaseHTTPRequestHandler
 ):
 
+
     # ========================================================
     # GET
     # ========================================================
 
-    def do_GET(self):
+    def do_GET(
+        self
+    ):
 
         parsed = urlparse(
             self.path
@@ -306,7 +323,9 @@ class Handler(
                 1
             )[-1]
 
+
             con = get_db()
+
 
             row = con.execute(
                 """
@@ -318,6 +337,7 @@ class Handler(
                     certificate_id,
                 )
             ).fetchone()
+
 
             con.close()
 
@@ -391,7 +411,9 @@ class Handler(
                 1
             )[-1]
 
+
             con = get_db()
+
 
             row = con.execute(
                 """
@@ -403,6 +425,7 @@ class Handler(
                     certificate_id,
                 )
             ).fetchone()
+
 
             con.close()
 
@@ -472,7 +495,9 @@ class Handler(
     # POST
     # ========================================================
 
-    def do_POST(self):
+    def do_POST(
+        self
+    ):
 
         if self.path != "/create":
 
@@ -576,7 +601,7 @@ class Handler(
 
 
         # ====================================================
-        # USER ENTERED DEVICE INFORMATION
+        # DEVICE INFORMATION
         # ====================================================
 
         device_serial = (
@@ -616,7 +641,7 @@ class Handler(
 
 
         # ====================================================
-        # DEVICE REQUIRED VALIDATION
+        # REQUIRED DEVICE VALIDATION
         # ====================================================
 
         if not device_serial:
@@ -657,10 +682,10 @@ class Handler(
 
         # ====================================================
         # SERIAL NUMBER
-        # EXACTLY 25 ALPHANUMERIC CHARACTERS
+        # ANY LENGTH - ALPHANUMERIC ONLY
         # ====================================================
 
-        if not is_exact_25_alphanumeric(
+        if not is_alphanumeric(
             device_serial
         ):
 
@@ -670,7 +695,7 @@ class Handler(
                 "text/plain; charset=utf-8",
                 (
                     b"Serial Number must contain "
-                    b"exactly 25 letters/numbers."
+                    b"only letters and numbers."
                 )
             )
 
@@ -679,10 +704,10 @@ class Handler(
 
         # ====================================================
         # IMEI NUMBER
-        # EXACTLY 25 ALPHANUMERIC CHARACTERS
+        # ANY LENGTH - ALPHANUMERIC ONLY
         # ====================================================
 
-        if not is_exact_25_alphanumeric(
+        if not is_alphanumeric(
             device_imei
         ):
 
@@ -692,7 +717,7 @@ class Handler(
                 "text/plain; charset=utf-8",
                 (
                     b"IMEI Number must contain "
-                    b"exactly 25 letters/numbers."
+                    b"only letters and numbers."
                 )
             )
 
@@ -701,10 +726,10 @@ class Handler(
 
         # ====================================================
         # ICCID NUMBER
-        # EXACTLY 25 ALPHANUMERIC CHARACTERS
+        # ANY LENGTH - ALPHANUMERIC ONLY
         # ====================================================
 
-        if not is_exact_25_alphanumeric(
+        if not is_alphanumeric(
             device_iccid
         ):
 
@@ -714,7 +739,7 @@ class Handler(
                 "text/plain; charset=utf-8",
                 (
                     b"ICCID Number must contain "
-                    b"exactly 25 letters/numbers."
+                    b"only letters and numbers."
                 )
             )
 
@@ -769,7 +794,7 @@ class Handler(
 
 
             # ----------------------------------------------
-            # VLTD
+            # VLTD DEVICE
             # ----------------------------------------------
 
             "device": {
@@ -849,7 +874,7 @@ class Handler(
 
 
         # ====================================================
-        # SAVE
+        # SAVE CERTIFICATE
         # ====================================================
 
         con = get_db()
@@ -900,11 +925,13 @@ class Handler(
             303
         )
 
+
         self.send_header(
             "Location",
             "/certificate/"
             + certificate_id
         )
+
 
         self.end_headers()
 
@@ -965,7 +992,7 @@ if __name__ == "__main__":
     )
 
     print(
-        "SIM Provider         :",
+        "SIM Provider        :",
         SIM_PROVIDER
     )
 
@@ -1003,11 +1030,11 @@ if __name__ == "__main__":
 
 
     print(
-        "ICCID Format        :"
+        "Device Number Format:"
     )
 
     print(
-        "Exactly 25 alphanumeric characters"
+        "Any length - Alphanumeric only"
     )
 
     print()
