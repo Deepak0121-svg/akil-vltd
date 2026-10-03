@@ -657,11 +657,11 @@ class Handler(
         # ====================================================
         # ICCID
         # Letters and numbers only
-        # EXACTLY 15 CHARACTERS
+        # EXACTLY 20 CHARACTERS
         # ====================================================
 
         if (
-            len(device_iccid) != 15
+            len(device_iccid) != 20
             or not device_iccid.isalnum()
         ):
 
@@ -669,7 +669,7 @@ class Handler(
                 self,
                 400,
                 "text/plain; charset=utf-8",
-                b"ICCID must contain exactly 15 letters/numbers."
+                b"ICCID must contain exactly 20 letters/numbers."
             )
 
             return
