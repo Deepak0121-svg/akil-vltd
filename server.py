@@ -195,23 +195,25 @@ def parse_post(
 # ============================================================
 # ALPHANUMERIC VALIDATOR
 # ============================================================
+#
+# Allows:
+#
+#     A-Z
+#     a-z
+#     0-9
+#
+# Any length.
+#
+# No spaces.
+# No special characters.
+#
+# IMPORTANT:
+# There is NO 10-character restriction.
+# ============================================================
 
 def is_alphanumeric(
     value
 ):
-
-    """
-    Allows:
-
-        A-Z
-        a-z
-        0-9
-
-    Any length.
-
-    No spaces.
-    No special characters.
-    """
 
     if not value:
 
@@ -540,8 +542,17 @@ class Handler(
 
 
         # ====================================================
-        # VEHICLE REGISTRATION NUMBER
-        # ANY LENGTH - ALPHANUMERIC ONLY
+        # VEHICLE REGISTRATION VALIDATION
+        #
+        # NO 10 CHARACTER LIMIT
+        #
+        # Any length is accepted.
+        #
+        # Only:
+        #     A-Z
+        #     0-9
+        #
+        # are allowed.
         # ====================================================
 
         if not is_alphanumeric(
@@ -601,12 +612,24 @@ class Handler(
         # ====================================================
 
         required_vehicle_fields = {
-            "Vehicle Category": vehicle_category,
-            "Vehicle Type": vehicle_type,
-            "Owner Name": owner_name,
-            "District / State": district_state,
-            "Date of Installation": installation_date,
-            "Date of Activation": activation_date
+
+            "Vehicle Category":
+                vehicle_category,
+
+            "Vehicle Type":
+                vehicle_type,
+
+            "Owner Name":
+                owner_name,
+
+            "District / State":
+                district_state,
+
+            "Date of Installation":
+                installation_date,
+
+            "Date of Activation":
+                activation_date
         }
 
 
@@ -1107,5 +1130,4 @@ if __name__ == "__main__":
     )
 
 
-    server.serve_forever()
-
+ 
