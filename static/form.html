@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -208,7 +209,10 @@
                         type="text"
                         name="device_serial"
                         id="device_serial"
-                        placeholder="Enter Serial Number"
+                        maxlength="15"
+                        minlength="15"
+                        pattern="[A-Za-z0-9]{15}"
+                        placeholder="Enter 15-character Serial Number"
                         required
                     >
 
@@ -244,7 +248,10 @@
                         name="device_iccid"
                         id="device_iccid"
                         inputmode="numeric"
-                        placeholder="Enter ICCID Number"
+                        maxlength="19"
+                        minlength="19"
+                        pattern="[0-9]{19}"
+                        placeholder="Enter 19-digit ICCID Number"
                         required
                     >
 
@@ -335,3 +342,4 @@
 </body>
 
 </html>
+

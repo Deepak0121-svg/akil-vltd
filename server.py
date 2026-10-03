@@ -619,15 +619,19 @@ class Handler(
         # ====================================================
         # SERIAL NUMBER
         # Letters and numbers only
+        # EXACTLY 15 CHARACTERS
         # ====================================================
 
-        if not device_serial.isalnum():
+        if (
+            len(device_serial) != 15
+            or not device_serial.isalnum()
+        ):
 
             send_response(
                 self,
                 400,
                 "text/plain; charset=utf-8",
-                b"Serial Number must contain letters/numbers only."
+                b"Serial Number must contain exactly 15 letters/numbers."
             )
 
             return
@@ -652,16 +656,20 @@ class Handler(
 
         # ====================================================
         # ICCID
-        # Numbers only
+        # Letters and numbers only
+        # EXACTLY 15 CHARACTERS
         # ====================================================
 
-        if not device_iccid.isdigit():
+        if (
+            len(device_iccid) != 15
+            or not device_iccid.isalnum()
+        ):
 
             send_response(
                 self,
                 400,
                 "text/plain; charset=utf-8",
-                b"ICCID Number must contain numbers only."
+                b"ICCID must contain exactly 15 letters/numbers."
             )
 
             return
@@ -738,6 +746,7 @@ class Handler(
                     device_iccid
 
             },
+
 
             # Keep these flat fields for compatibility
             # with any older certificate template.
@@ -910,7 +919,7 @@ if __name__ == "__main__":
     )
 
     print(
-        "SIM Provider        :",
+        "SIM Provider         :",
         SIM_PROVIDER
     )
 
