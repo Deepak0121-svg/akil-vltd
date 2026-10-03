@@ -3,30 +3,25 @@ document.addEventListener(
     "DOMContentLoaded",
     function () {
 
-
         const form =
             document.getElementById(
                 "certificateForm"
             );
-
 
         const registration =
             document.getElementById(
                 "vehicle_registration"
             );
 
-
         const serial =
             document.getElementById(
                 "device_serial"
             );
 
-
         const imei =
             document.getElementById(
                 "device_imei"
             );
-
 
         const iccid =
             document.getElementById(
@@ -34,7 +29,7 @@ document.addEventListener(
             );
 
 
-        /* 
+        /*
         ========================================================
         VEHICLE REGISTRATION
         EXACTLY 10 ALPHANUMERIC CHARACTERS
@@ -61,60 +56,100 @@ document.addEventListener(
         );
 
 
-        /* 
+        /*
         ========================================================
-        DEVICE FIELD CLEANER
-        SERIAL / IMEI / ICCID
+        SERIAL NUMBER
         EXACTLY 25 ALPHANUMERIC CHARACTERS
         ========================================================
         */
 
-        function cleanDeviceField(
-            field
-        ) {
+        serial.addEventListener(
+            "input",
+            function () {
 
-            field.addEventListener(
-                "input",
-                function () {
+                this.value =
+                    this.value
+                    .replace(
+                        /[^a-zA-Z0-9]/g,
+                        ""
+                    )
+                    .toUpperCase()
+                    .slice(
+                        0,
+                        25
+                    );
 
-                    this.value =
-                        this.value
-                        .replace(
-                            /[^a-zA-Z0-9]/g,
-                            ""
-                        )
-                        .toUpperCase()
-                        .slice(
-                            0,
-                            25
-                        );
-
-                }
-            );
-
-        }
+            }
+        );
 
 
         /*
-        --------------------------------------------------------
-        APPLY TO ALL THREE DEVICE FIELDS
-        --------------------------------------------------------
+        ========================================================
+        IMEI NUMBER
+        EXACTLY 25 ALPHANUMERIC CHARACTERS
+        ========================================================
         */
 
-        cleanDeviceField(
-            serial
+        imei.addEventListener(
+            "input",
+            function () {
+
+                this.value =
+                    this.value
+                    .replace(
+                        /[^a-zA-Z0-9]/g,
+                        ""
+                    )
+                    .toUpperCase()
+                    .slice(
+                        0,
+                        25
+                    );
+
+            }
         );
 
-        cleanDeviceField(
-            imei
+
+        /*
+        ========================================================
+        ICCID NUMBER
+        EXACTLY 25 ALPHANUMERIC CHARACTERS
+        ========================================================
+
+        Allowed:
+        0-9
+        A-Z
+        a-z
+
+        Example:
+        8991430008112624155FABC12
+
+        Length:
+        25 characters
+        ========================================================
+        */
+
+        iccid.addEventListener(
+            "input",
+            function () {
+
+                this.value =
+                    this.value
+                    .replace(
+                        /[^a-zA-Z0-9]/g,
+                        ""
+                    )
+                    .toUpperCase()
+                    .slice(
+                        0,
+                        25
+                    );
+
+            }
         );
 
-        cleanDeviceField(
-            iccid
-        );
 
-
-        /* 
+        /*
         ========================================================
         FORM VALIDATION
         ========================================================
@@ -124,8 +159,7 @@ document.addEventListener(
             "submit",
             function (event) {
 
-
-                /* 
+                /*
                 ------------------------------------------------
                 VEHICLE REGISTRATION
                 ------------------------------------------------
@@ -154,7 +188,7 @@ document.addEventListener(
                 }
 
 
-                /* 
+                /*
                 ------------------------------------------------
                 DEVICE VALUES
                 ------------------------------------------------
@@ -172,7 +206,7 @@ document.addEventListener(
                     iccid.value.trim();
 
 
-                /* 
+                /*
                 ------------------------------------------------
                 REQUIRED FIELD VALIDATION
                 ------------------------------------------------
@@ -223,7 +257,7 @@ document.addEventListener(
                 }
 
 
-                /* 
+                /*
                 ====================================================
                 SERIAL NUMBER VALIDATION
                 EXACTLY 25 ALPHANUMERIC CHARACTERS
@@ -249,7 +283,7 @@ document.addEventListener(
                 }
 
 
-                /* 
+                /*
                 ====================================================
                 IMEI VALIDATION
                 EXACTLY 25 ALPHANUMERIC CHARACTERS
@@ -275,7 +309,7 @@ document.addEventListener(
                 }
 
 
-                /* 
+                /*
                 ====================================================
                 ICCID VALIDATION
                 EXACTLY 25 ALPHANUMERIC CHARACTERS
@@ -301,7 +335,7 @@ document.addEventListener(
                 }
 
 
-                /* 
+                /*
                 ====================================================
                 ALL VALID
                 FORM WILL SUBMIT NORMALLY

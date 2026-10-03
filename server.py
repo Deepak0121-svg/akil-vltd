@@ -49,14 +49,7 @@ PORT = int(
 # PUBLIC URL
 # ============================================================
 
-# For testing on the same computer:
 PUBLIC_BASE_URL = "https://akil-vltd.onrender.com"
-
-# If QR must be scanned from a phone on the same Wi-Fi,
-# replace localhost with your computer's LAN IP.
-#
-# Example:
-# PUBLIC_BASE_URL = "http://192.168.1.20:8090"
 
 
 # ============================================================
@@ -193,6 +186,30 @@ def parse_post(handler):
         key: value[0]
         for key, value in values.items()
     }
+
+
+# ============================================================
+# ALPHANUMERIC VALIDATOR
+# ============================================================
+
+def is_exact_25_alphanumeric(value):
+
+    """
+    Accept exactly 25 characters.
+
+    Allowed:
+        A-Z
+        a-z
+        0-9
+
+    Lowercase letters are converted to uppercase
+    before this function is called.
+    """
+
+    if len(value) != 25:
+        return False
+
+    return value.isascii() and value.isalnum()
 
 
 # ============================================================
@@ -500,7 +517,10 @@ class Handler(
                 registration_number
             ) != 10
 
-            or not registration_number.isalnum()
+            or not (
+                registration_number.isascii()
+                and registration_number.isalnum()
+            )
 
         ):
 
@@ -566,6 +586,7 @@ class Handler(
                 ""
             )
             .strip()
+            .upper()
 
         )
 
@@ -577,6 +598,7 @@ class Handler(
                 ""
             )
             .strip()
+            .upper()
 
         )
 
@@ -588,6 +610,7 @@ class Handler(
                 ""
             )
             .strip()
+            .upper()
 
         )
 
@@ -637,26 +660,18 @@ class Handler(
         # EXACTLY 25 ALPHANUMERIC CHARACTERS
         # ====================================================
 
-        device_serial = (
+        if not is_exact_25_alphanumeric(
             device_serial
-            .strip()
-            .upper()
-        )
-
-
-        if (
-
-            len(device_serial) != 25
-
-            or not device_serial.isalnum()
-
         ):
 
             send_response(
                 self,
                 400,
                 "text/plain; charset=utf-8",
-                b"Serial Number must contain exactly 25 letters/numbers."
+                (
+                    b"Serial Number must contain "
+                    b"exactly 25 letters/numbers."
+                )
             )
 
             return
@@ -667,26 +682,18 @@ class Handler(
         # EXACTLY 25 ALPHANUMERIC CHARACTERS
         # ====================================================
 
-        device_imei = (
+        if not is_exact_25_alphanumeric(
             device_imei
-            .strip()
-            .upper()
-        )
-
-
-        if (
-
-            len(device_imei) != 25
-
-            or not device_imei.isalnum()
-
         ):
 
             send_response(
                 self,
                 400,
                 "text/plain; charset=utf-8",
-                b"IMEI Number must contain exactly 25 letters/numbers."
+                (
+                    b"IMEI Number must contain "
+                    b"exactly 25 letters/numbers."
+                )
             )
 
             return
@@ -697,26 +704,18 @@ class Handler(
         # EXACTLY 25 ALPHANUMERIC CHARACTERS
         # ====================================================
 
-        device_iccid = (
+        if not is_exact_25_alphanumeric(
             device_iccid
-            .strip()
-            .upper()
-        )
-
-
-        if (
-
-            len(device_iccid) != 25
-
-            or not device_iccid.isalnum()
-
         ):
 
             send_response(
                 self,
                 400,
                 "text/plain; charset=utf-8",
-                b"ICCID Number must contain exactly 25 letters/numbers."
+                (
+                    b"ICCID Number must contain "
+                    b"exactly 25 letters/numbers."
+                )
             )
 
             return
@@ -771,8 +770,6 @@ class Handler(
 
             # ----------------------------------------------
             # VLTD
-            # Fixed manufacturer/model.
-            # Serial / IMEI / ICCID come from the form.
             # ----------------------------------------------
 
             "device": {
@@ -796,8 +793,7 @@ class Handler(
 
 
             # ----------------------------------------------
-            # Keep these flat fields for compatibility
-            # with any older certificate template.
+            # FLAT DEVICE FIELDS
             # ----------------------------------------------
 
             "device_manufacturer":
@@ -957,6 +953,7 @@ if __name__ == "__main__":
 
     print()
 
+
     print(
         "Manufacturer        :",
         DEVICE_MANUFACTURER
@@ -974,12 +971,14 @@ if __name__ == "__main__":
 
     print()
 
+
     print(
         "Server Port         :",
         PORT
     )
 
     print()
+
 
     print(
         "Open on this computer:"
@@ -991,6 +990,7 @@ if __name__ == "__main__":
 
     print()
 
+
     print(
         "QR Base URL:"
     )
@@ -1001,11 +1001,24 @@ if __name__ == "__main__":
 
     print()
 
+
+    print(
+        "ICCID Format        :"
+    )
+
+    print(
+        "Exactly 25 alphanumeric characters"
+    )
+
+    print()
+
+
     print(
         "Press CTRL+C to stop."
     )
 
     print()
+
 
     print(
         "=" * 65
