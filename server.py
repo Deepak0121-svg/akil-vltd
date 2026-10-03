@@ -1,42 +1,38 @@
-import os
 import json
-import uuid
+import os
 import sqlite3
+import uuid
+
+from datetime import datetime
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import urlparse, quote, parse_qs
+from io import BytesIO
+
 import qrcode
 
-from datetime import datetime, timezone
-from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse, unquote
-from pathlib import Path
-
 
 # ============================================================
-# PATH CONFIGURATION
+# CONFIGURATION
 # ============================================================
 
-BASE_DIR = Path(__file__).resolve().parent
-
-DATA_DIR = BASE_DIR / "data"
-STATIC_DIR = BASE_DIR / "static"
-
-DB = DATA_DIR / "certificates.db"
-
-
-# Create required folders
-DATA_DIR.mkdir(
-    parents=True,
-    exist_ok=True
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
 )
 
-STATIC_DIR.mkdir(
-    parents=True,
-    exist_ok=True
+DATA_DIR = os.path.join(
+    BASE_DIR,
+    "data"
 )
 
+STATIC_DIR = os.path.join(
+    BASE_DIR,
+    "static"
+)
 
-# ============================================================
-# SERVER CONFIGURATION
-# ============================================================
+DB = os.path.join(
+    DATA_DIR,
+    "certificates.db"
+)
 
 HOST = "0.0.0.0"
 
@@ -56,7 +52,7 @@ PUBLIC_BASE_URL = "https://akil-vltd.onrender.com"
 
 
 # ============================================================
-# FIXED DEVICE INFORMATION
+# FIXED VLTD DETAILS
 # ============================================================
 
 DEVICE_MANUFACTURER = "AKIL ENTERPRISES"
@@ -69,27 +65,28 @@ SIM_VALIDITY = "1 Year"
 
 
 # ============================================================
+# CREATE DATA DIRECTORY
+# ============================================================
+
+os.makedirs(
+    DATA_DIR,
+    exist_ok=True
+)
+
+
+# ============================================================
 # DATABASE
 # ============================================================
 
-def get_connection():
+def get_db():
 
-    connection = sqlite3.connect(
+    con = sqlite3.connect(
         DB
     )
 
-    connection.row_factory = sqlite3.Row
+    con.row_factory = sqlite3.Row
 
-    return connection
-
-
-def init_database():
-
-    connection = get_connection()
-
-    cursor = connection.cursor()
-
-    cursor.execute(
+    con.execute(
         """
         CREATE TABLE IF NOT EXISTS certificates
         (
@@ -100,38 +97,119 @@ def init_database():
         """
     )
 
-    connection.commit()
+    con.commit()
 
-    connection.close()
+    return con
 
 
 # ============================================================
-# VALIDATION HELPERS
+# STATIC FILE READER
 # ============================================================
 
-def is_alphanumeric(value):
+def read_static_file(
+    filename
+):
+
+    path = os.path.join(
+        STATIC_DIR,
+        filename
+    )
+
+    with open(
+        path,
+        "rb"
+    ) as f:
+
+        return f.read()
+
+
+# ============================================================
+# HTTP RESPONSE
+# ============================================================
+
+def send_response(
+    handler,
+    status_code,
+    content_type,
+    body
+):
+
+    handler.send_response(
+        status_code
+    )
+
+    handler.send_header(
+        "Content-Type",
+        content_type
+    )
+
+    handler.send_header(
+        "Cache-Control",
+        "no-store"
+    )
+
+    handler.send_header(
+        "Content-Length",
+        str(len(body))
+    )
+
+    handler.end_headers()
+
+    handler.wfile.write(
+        body
+    )
+
+
+# ============================================================
+# POST FORM PARSER
+# ============================================================
+
+def parse_post(
+    handler
+):
+
+    content_length = int(
+        handler.headers.get(
+            "Content-Length",
+            "0"
+        )
+    )
+
+    raw = handler.rfile.read(
+        content_length
+    ).decode(
+        "utf-8"
+    )
+
+    values = parse_qs(
+        raw
+    )
+
+    return {
+        key: value[0]
+        for key, value in values.items()
+    }
+
+
+# ============================================================
+# ALPHANUMERIC VALIDATOR
+# ============================================================
+
+def is_alphanumeric(
+    value
+):
+
     """
-    Accepts ANY length.
+    Allows:
 
-    Allowed:
         A-Z
         a-z
         0-9
 
-    No minimum/maximum length.
+    Any length.
 
-    Examples accepted:
-        123
-        ABC123
-        8991430008112624155
-        8991430008112624155F
-        ABC123XYZ987654321
-
-    Examples rejected:
-        empty
-        ABC 123
-        ABC-123
-        ABC@123
+    No spaces.
+    No special characters.
     """
 
     if not value:
@@ -143,286 +221,39 @@ def is_alphanumeric(value):
     )
 
 
-def is_vehicle_registration(value):
-    """
-    Vehicle registration must contain
-    exactly 10 alphanumeric characters.
-    """
-
-    if not value:
-        return False
-
-    if not value.isascii():
-        return False
-
-    if not value.isalnum():
-        return False
-
-    return len(value) == 10
-
-
 # ============================================================
-# FORM VALUE HELPER
+# CLEAN FORM VALUE
 # ============================================================
 
-def clean_value(value):
-    """
-    Convert None to empty string and remove
-    leading/trailing spaces.
-    """
-
-    if value is None:
-        return ""
-
-    return str(value).strip()
-
-
-# ============================================================
-# HTML FILE LOADER
-# ============================================================
-
-def load_file(filename):
-
-    file_path = STATIC_DIR / filename
-
-    if not file_path.exists():
-
-        return None
-
-    return file_path.read_text(
-        encoding="utf-8"
-    )
-
-
-# ============================================================
-# CERTIFICATE ID
-# ============================================================
-
-def generate_certificate_id():
-
-    return uuid.uuid4().hex[:12].upper()
-
-
-# ============================================================
-# CURRENT TIME
-# ============================================================
-
-def current_timestamp():
-
-    return datetime.now(
-        timezone.utc
-    ).isoformat()
-
-
-# ============================================================
-# SAVE CERTIFICATE
-# ============================================================
-
-def save_certificate(
-    certificate_id,
-    certificate_data
+def clean_value(
+    form,
+    field
 ):
 
-    connection = get_connection()
-
-    cursor = connection.cursor()
-
-    cursor.execute(
-        """
-        INSERT INTO certificates
-        (
-            id,
-            data,
-            created_at
+    return (
+        form.get(
+            field,
+            ""
         )
-        VALUES
-        (
-            ?,
-            ?,
-            ?
-        )
-        """,
-        (
-            certificate_id,
-            json.dumps(
-                certificate_data,
-                ensure_ascii=False
-            ),
-            current_timestamp()
-        )
+        .strip()
     )
 
-    connection.commit()
-
-    connection.close()
-
 
 # ============================================================
-# LOAD CERTIFICATE
-# ============================================================
-
-def load_certificate(
-    certificate_id
-):
-
-    connection = get_connection()
-
-    cursor = connection.cursor()
-
-    cursor.execute(
-        """
-        SELECT
-            data
-        FROM certificates
-        WHERE id = ?
-        """,
-        (
-            certificate_id,
-        )
-    )
-
-    row = cursor.fetchone()
-
-    connection.close()
-
-    if not row:
-        return None
-
-    try:
-
-        return json.loads(
-            row["data"]
-        )
-
-    except Exception:
-
-        return None
-
-
-# ============================================================
-# SEND RESPONSE
+# REQUEST HANDLER
 # ============================================================
 
 class Handler(
     BaseHTTPRequestHandler
 ):
 
-
-    # --------------------------------------------------------
-    # COMMON RESPONSE
-    # --------------------------------------------------------
-
-    def send_text(
-        self,
-        content,
-        status=200,
-        content_type="text/html; charset=utf-8"
-    ):
-
-        if isinstance(
-            content,
-            str
-        ):
-
-            content = content.encode(
-                "utf-8"
-            )
-
-        self.send_response(
-            status
-        )
-
-        self.send_header(
-            "Content-Type",
-            content_type
-        )
-
-        self.send_header(
-            "Content-Length",
-            str(len(content))
-        )
-
-        self.end_headers()
-
-        self.wfile.write(
-            content
-        )
-
-
-    # --------------------------------------------------------
-    # REDIRECT
-    # --------------------------------------------------------
-
-    def redirect(
-        self,
-        location
-    ):
-
-        self.send_response(
-            303
-        )
-
-        self.send_header(
-            "Location",
-            location
-        )
-
-        self.end_headers()
-
-
-    # --------------------------------------------------------
-    # 404
-    # --------------------------------------------------------
-
-    def not_found(self):
-
-        self.send_text(
-            """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>404</title>
-            </head>
-            <body>
-                <h1>404 - Not Found</h1>
-            </body>
-            </html>
-            """,
-            status=404
-        )
-
-
-    # --------------------------------------------------------
-    # SERVER ERROR
-    # --------------------------------------------------------
-
-    def server_error(
-        self,
-        message
-    ):
-
-        self.send_text(
-            f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Server Error</title>
-            </head>
-            <body>
-                <h1>Server Error</h1>
-                <p>{message}</p>
-            </body>
-            </html>
-            """,
-            status=500
-        )
-
-
     # ========================================================
     # GET
     # ========================================================
 
-    def do_GET(self):
+    def do_GET(
+        self
+    ):
 
         parsed = urlparse(
             self.path
@@ -431,380 +262,400 @@ class Handler(
         path = parsed.path
 
 
-        # ----------------------------------------------------
-        # HOME PAGE
-        # ----------------------------------------------------
+        # ====================================================
+        # MAIN FORM
+        # ====================================================
 
         if path == "/":
 
-            html = load_file(
+            body = read_static_file(
                 "form.html"
             )
 
-            if html is None:
-
-                self.not_found()
-
-                return
-
-            self.send_text(
-                html
+            send_response(
+                self,
+                200,
+                "text/html; charset=utf-8",
+                body
             )
 
             return
 
 
-        # ----------------------------------------------------
-        # STYLE CSS
-        # ----------------------------------------------------
+        # ====================================================
+        # CSS
+        # ====================================================
 
         if path == "/static/style.css":
 
-            css = load_file(
+            body = read_static_file(
                 "style.css"
             )
 
-            if css is None:
-
-                self.not_found()
-
-                return
-
-            self.send_text(
-                css,
-                content_type="text/css; charset=utf-8"
+            send_response(
+                self,
+                200,
+                "text/css; charset=utf-8",
+                body
             )
 
             return
 
 
-        # ----------------------------------------------------
-        # APP JS
-        # ----------------------------------------------------
+        # ====================================================
+        # JAVASCRIPT
+        # ====================================================
 
         if path == "/static/app.js":
 
-            js = load_file(
+            body = read_static_file(
                 "app.js"
             )
 
-            if js is None:
-
-                self.not_found()
-
-                return
-
-            self.send_text(
-                js,
-                content_type="application/javascript; charset=utf-8"
+            send_response(
+                self,
+                200,
+                "application/javascript; charset=utf-8",
+                body
             )
 
             return
 
 
-        # ----------------------------------------------------
-        # CERTIFICATE PAGE
-        #
-        # /certificate/XXXXXXXXXXXX
-        # ----------------------------------------------------
+        # ====================================================
+        # CERTIFICATE
+        # ====================================================
 
         if path.startswith(
             "/certificate/"
         ):
 
-            certificate_id = unquote(
-                path[
-                    len("/certificate/"):
-                ]
-            ).strip()
+            certificate_id = path.rsplit(
+                "/",
+                1
+            )[-1]
 
-            if not certificate_id:
 
-                self.not_found()
+            con = get_db()
+
+
+            row = con.execute(
+                """
+                SELECT data
+                FROM certificates
+                WHERE id = ?
+                """,
+                (
+                    certificate_id,
+                )
+            ).fetchone()
+
+
+            con.close()
+
+
+            if not row:
+
+                send_response(
+                    self,
+                    404,
+                    "text/plain; charset=utf-8",
+                    b"Certificate not found"
+                )
 
                 return
 
-            certificate_data = load_certificate(
-                certificate_id
+
+            certificate_data = json.loads(
+                row["data"]
             )
 
-            if certificate_data is None:
 
-                self.not_found()
-
-                return
-
-            certificate_html = load_file(
+            page = read_static_file(
                 "certificate.html"
+            ).decode(
+                "utf-8"
             )
 
-            if certificate_html is None:
 
-                self.not_found()
-
-                return
-
-            certificate_json = json.dumps(
+            json_data = json.dumps(
                 certificate_data,
                 ensure_ascii=False
             )
 
-            certificate_html = certificate_html.replace(
-                "__CERT_DATA__",
-                certificate_json
+
+            # Prevent </script> problems
+
+            json_data = json_data.replace(
+                "</",
+                "<\\/"
             )
 
-            self.send_text(
-                certificate_html
+
+            page = page.replace(
+                "__CERT_DATA__",
+                json_data
+            )
+
+
+            send_response(
+                self,
+                200,
+                "text/html; charset=utf-8",
+                page.encode(
+                    "utf-8"
+                )
             )
 
             return
 
 
-        # ----------------------------------------------------
+        # ====================================================
         # QR CODE
-        #
-        # /qr/XXXXXXXXXXXX
-        # ----------------------------------------------------
+        # ====================================================
 
         if path.startswith(
             "/qr/"
         ):
 
-            certificate_id = unquote(
-                path[
-                    len("/qr/"):
-                ]
-            ).strip()
+            certificate_id = path.rsplit(
+                "/",
+                1
+            )[-1]
 
-            if not certificate_id:
 
-                self.not_found()
+            con = get_db()
+
+
+            row = con.execute(
+                """
+                SELECT id
+                FROM certificates
+                WHERE id = ?
+                """,
+                (
+                    certificate_id,
+                )
+            ).fetchone()
+
+
+            con.close()
+
+
+            if not row:
+
+                send_response(
+                    self,
+                    404,
+                    "text/plain; charset=utf-8",
+                    b"Certificate not found"
+                )
 
                 return
 
-            certificate_data = load_certificate(
-                certificate_id
-            )
 
-            if certificate_data is None:
-
-                self.not_found()
-
-                return
-
-            verification_url = (
-                PUBLIC_BASE_URL
+            target_url = (
+                PUBLIC_BASE_URL.rstrip("/")
                 + "/certificate/"
-                + certificate_id
+                + quote(
+                    certificate_id
+                )
             )
 
-            try:
 
-                qr = qrcode.QRCode(
-                    version=1,
-                    error_correction=qrcode.constants.ERROR_CORRECT_M,
-                    box_size=10,
-                    border=4
-                )
-
-                qr.add_data(
-                    verification_url
-                )
-
-                qr.make(
-                    fit=True
-                )
-
-                image = qr.make_image()
-
-                from io import BytesIO
-
-                output = BytesIO()
-
-                image.save(
-                    output,
-                    format="PNG"
-                )
-
-                png_data = output.getvalue()
-
-                self.send_text(
-                    png_data,
-                    content_type="image/png"
-                )
-
-                return
-
-            except Exception as error:
-
-                self.server_error(
-                    str(error)
-                )
-
-                return
+            qr_image = qrcode.make(
+                target_url
+            )
 
 
-        # ----------------------------------------------------
-        # UNKNOWN PATH
-        # ----------------------------------------------------
+            buffer = BytesIO()
 
-        self.not_found()
+
+            qr_image.save(
+                buffer,
+                format="PNG"
+            )
+
+
+            send_response(
+                self,
+                200,
+                "image/png",
+                buffer.getvalue()
+            )
+
+            return
+
+
+        # ====================================================
+        # 404
+        # ====================================================
+
+        send_response(
+            self,
+            404,
+            "text/plain",
+            b"Not Found"
+        )
 
 
     # ========================================================
     # POST
     # ========================================================
 
-    def do_POST(self):
+    def do_POST(
+        self
+    ):
 
-        parsed = urlparse(
-            self.path
+        if self.path != "/create":
+
+            send_response(
+                self,
+                404,
+                "text/plain",
+                b"Not Found"
+            )
+
+            return
+
+
+        form = parse_post(
+            self
         )
 
-        path = parsed.path
-
-
-        # ----------------------------------------------------
-        # CREATE CERTIFICATE
-        # ----------------------------------------------------
-
-        if path != "/create":
-
-            self.not_found()
-
-            return
-
-
-        try:
-
-            content_length = int(
-                self.headers.get(
-                    "Content-Length",
-                    "0"
-                )
-            )
-
-        except ValueError:
-
-            content_length = 0
-
-
-        if content_length <= 0:
-
-            self.send_text(
-                "Invalid form submission.",
-                status=400
-            )
-
-            return
-
-
-        try:
-
-            body = self.rfile.read(
-                content_length
-            )
-
-            body_text = body.decode(
-                "utf-8"
-            )
-
-            from urllib.parse import parse_qs
-
-            form = parse_qs(
-                body_text,
-                keep_blank_values=True
-            )
-
-        except Exception as error:
-
-            self.send_text(
-                f"Unable to read form: {error}",
-                status=400
-            )
-
-            return
-
 
         # ====================================================
-        # GET FORM VALUE
+        # VEHICLE REGISTRATION
         # ====================================================
 
-        def get_form_value(
-            name
-        ):
-
-            values = form.get(
-                name,
-                [""]
-            )
-
-            if not values:
-
-                return ""
-
-            return clean_value(
-                values[0]
-            )
-
-
-        # ====================================================
-        # VEHICLE DETAILS
-        # ====================================================
-
-        vehicle_registration = (
-            get_form_value(
+        registration_number = (
+            clean_value(
+                form,
                 "vehicle_registration"
             )
             .upper()
         )
 
-        vehicle_category = get_form_value(
+
+        # ====================================================
+        # EXACTLY 10 ALPHANUMERIC CHARACTERS
+        # ====================================================
+
+        if (
+            len(
+                registration_number
+            ) != 10
+            or not (
+                registration_number.isascii()
+                and registration_number.isalnum()
+            )
+        ):
+
+            send_response(
+                self,
+                400,
+                "text/plain; charset=utf-8",
+                (
+                    b"Vehicle Registration Number "
+                    b"must be exactly 10 letters/numbers."
+                )
+            )
+
+            return
+
+
+        # ====================================================
+        # VEHICLE FIELDS
+        # ====================================================
+
+        vehicle_category = clean_value(
+            form,
             "vehicle_category"
         )
 
-        vehicle_type = get_form_value(
+        vehicle_type = clean_value(
+            form,
             "vehicle_type"
         )
 
-        owner_name = get_form_value(
+        owner_name = clean_value(
+            form,
             "owner_name"
         )
 
-        district_state = get_form_value(
+        district_state = clean_value(
+            form,
             "district_state"
         )
 
-        installation_date = get_form_value(
+        installation_date = clean_value(
+            form,
             "installation_date"
         )
 
-        activation_date = get_form_value(
+        activation_date = clean_value(
+            form,
             "activation_date"
         )
 
 
         # ====================================================
-        # DEVICE DETAILS
+        # REQUIRED VEHICLE VALIDATION
+        # ====================================================
+
+        required_vehicle_fields = {
+            "Vehicle Category": vehicle_category,
+            "Vehicle Type": vehicle_type,
+            "Owner Name": owner_name,
+            "District / State": district_state,
+            "Date of Installation": installation_date,
+            "Date of Activation": activation_date
+        }
+
+
+        for field_name, field_value in required_vehicle_fields.items():
+
+            if not field_value:
+
+                send_response(
+                    self,
+                    400,
+                    "text/plain; charset=utf-8",
+                    (
+                        f"{field_name} is required."
+                    ).encode(
+                        "utf-8"
+                    )
+                )
+
+                return
+
+
+        # ====================================================
+        # DEVICE INFORMATION
         # ====================================================
 
         device_serial = (
-            get_form_value(
+            clean_value(
+                form,
                 "device_serial"
             )
             .upper()
         )
 
+
         device_imei = (
-            get_form_value(
+            clean_value(
+                form,
                 "device_imei"
             )
             .upper()
         )
 
+
         device_iccid = (
-            get_form_value(
+            clean_value(
+                form,
                 "device_iccid"
             )
             .upper()
@@ -812,75 +663,16 @@ class Handler(
 
 
         # ====================================================
-        # VEHICLE REGISTRATION VALIDATION
-        # EXACTLY 10 CHARACTERS
-        # ====================================================
-
-        if not is_vehicle_registration(
-            vehicle_registration
-        ):
-
-            self.send_text(
-                """
-                Vehicle Registration Number
-                must contain exactly 10
-                letters/numbers.
-                """,
-                status=400
-            )
-
-            return
-
-
-        # ====================================================
-        # REQUIRED VEHICLE FIELDS
-        # ====================================================
-
-        required_fields = {
-
-            "Vehicle Category":
-                vehicle_category,
-
-            "Vehicle Type":
-                vehicle_type,
-
-            "Owner Name":
-                owner_name,
-
-            "District / State":
-                district_state,
-
-            "Installation Date":
-                installation_date,
-
-            "Activation Date":
-                activation_date
-        }
-
-
-        for field_name, value in required_fields.items():
-
-            if not value:
-
-                self.send_text(
-                    f"""
-                    {field_name} is required.
-                    """,
-                    status=400
-                )
-
-                return
-
-
-        # ====================================================
-        # DEVICE FIELD REQUIRED VALIDATION
+        # REQUIRED DEVICE VALIDATION
         # ====================================================
 
         if not device_serial:
 
-            self.send_text(
-                "Please enter Serial Number.",
-                status=400
+            send_response(
+                self,
+                400,
+                "text/plain; charset=utf-8",
+                b"Device Serial Number is required."
             )
 
             return
@@ -888,9 +680,11 @@ class Handler(
 
         if not device_imei:
 
-            self.send_text(
-                "Please enter IMEI Number.",
-                status=400
+            send_response(
+                self,
+                400,
+                "text/plain; charset=utf-8",
+                b"IMEI Number is required."
             )
 
             return
@@ -898,76 +692,91 @@ class Handler(
 
         if not device_iccid:
 
-            self.send_text(
-                "Please enter ICCID Number.",
-                status=400
+            send_response(
+                self,
+                400,
+                "text/plain; charset=utf-8",
+                b"ICCID Number is required."
             )
 
             return
 
 
         # ====================================================
-        # DEVICE SERIAL VALIDATION
-        #
-        # IMPORTANT:
-        # NO 25 CHARACTER LIMIT
+        # SERIAL NUMBER
+        # ANY LENGTH - ALPHANUMERIC ONLY
         # ====================================================
 
         if not is_alphanumeric(
             device_serial
         ):
 
-            self.send_text(
-                "Serial Number must contain only letters and numbers.",
-                status=400
+            send_response(
+                self,
+                400,
+                "text/plain; charset=utf-8",
+                (
+                    b"Serial Number must contain "
+                    b"only letters and numbers."
+                )
             )
 
             return
 
 
         # ====================================================
-        # IMEI VALIDATION
-        #
-        # IMPORTANT:
-        # NO 25 CHARACTER LIMIT
+        # IMEI NUMBER
+        # ANY LENGTH - ALPHANUMERIC ONLY
         # ====================================================
 
         if not is_alphanumeric(
             device_imei
         ):
 
-            self.send_text(
-                "IMEI Number must contain only letters and numbers.",
-                status=400
+            send_response(
+                self,
+                400,
+                "text/plain; charset=utf-8",
+                (
+                    b"IMEI Number must contain "
+                    b"only letters and numbers."
+                )
             )
 
             return
 
 
         # ====================================================
-        # ICCID VALIDATION
-        #
-        # IMPORTANT:
-        # NO 25 CHARACTER LIMIT
+        # ICCID NUMBER
+        # ANY LENGTH - ALPHANUMERIC ONLY
         # ====================================================
 
         if not is_alphanumeric(
             device_iccid
         ):
 
-            self.send_text(
-                "ICCID Number must contain only letters and numbers.",
-                status=400
+            send_response(
+                self,
+                400,
+                "text/plain; charset=utf-8",
+                (
+                    b"ICCID Number must contain "
+                    b"only letters and numbers."
+                )
             )
 
             return
 
 
         # ====================================================
-        # GENERATE CERTIFICATE ID
+        # CERTIFICATE ID
         # ====================================================
 
-        certificate_id = generate_certificate_id()
+        certificate_id = (
+            uuid.uuid4()
+            .hex[:12]
+            .upper()
+        )
 
 
         # ====================================================
@@ -976,49 +785,49 @@ class Handler(
 
         certificate_data = {
 
-            # -----------------------------------------------
-            # CERTIFICATE
-            # -----------------------------------------------
+            # ==================================================
+            # VEHICLE DETAILS
+            # ==================================================
 
-            "certificate_id":
-                certificate_id,
+            "vehicle_registration":
+                registration_number,
 
-            "created_at":
-                current_timestamp(),
+            "vehicle_category":
+                vehicle_category,
 
+            "vehicle_type":
+                vehicle_type,
 
-            # -----------------------------------------------
-            # VEHICLE
-            # -----------------------------------------------
+            "owner_name":
+                owner_name,
 
-            "vehicle": {
-
-                "registration":
-                    vehicle_registration,
-
-                "category":
-                    vehicle_category,
-
-                "type":
-                    vehicle_type,
-
-                "owner_name":
-                    owner_name,
-
-                "district_state":
-                    district_state,
-
-                "installation_date":
-                    installation_date,
-
-                "activation_date":
-                    activation_date
-            },
+            "district_state":
+                district_state,
 
 
-            # -----------------------------------------------
-            # DEVICE
-            # -----------------------------------------------
+            # ==================================================
+            # EXPLICIT CERTIFICATE DISPLAY FIELDS
+            # ==================================================
+
+            "certificate_vehicle_registration":
+                registration_number,
+
+            "certificate_vehicle_category":
+                vehicle_category,
+
+            "certificate_vehicle_type":
+                vehicle_type,
+
+            "certificate_owner_name":
+                owner_name,
+
+            "certificate_district_state":
+                district_state,
+
+
+            # ==================================================
+            # VLTD DEVICE
+            # ==================================================
 
             "device": {
 
@@ -1039,12 +848,9 @@ class Handler(
             },
 
 
-            # -----------------------------------------------
+            # ==================================================
             # FLAT DEVICE FIELDS
-            #
-            # Kept for compatibility with existing
-            # certificate.html / JavaScript.
-            # -----------------------------------------------
+            # ==================================================
 
             "device_manufacturer":
                 DEVICE_MANUFACTURER,
@@ -1062,9 +868,9 @@ class Handler(
                 device_iccid,
 
 
-            # -----------------------------------------------
+            # ==================================================
             # SIM
-            # -----------------------------------------------
+            # ==================================================
 
             "sim_provider":
                 SIM_PROVIDER,
@@ -1073,51 +879,103 @@ class Handler(
                 SIM_VALIDITY,
 
 
-            # -----------------------------------------------
-            # VERIFICATION URL
-            # -----------------------------------------------
+            # ==================================================
+            # DATES
+            # ==================================================
 
-            "verification_url":
-                (
-                    PUBLIC_BASE_URL
-                    + "/certificate/"
-                    + certificate_id
-                )
+            "installation_date":
+                installation_date,
+
+            "activation_date":
+                activation_date,
+
+
+            # ==================================================
+            # EXPLICIT CERTIFICATE DATE FIELDS
+            # ==================================================
+
+            "certificate_installation_date":
+                installation_date,
+
+            "certificate_activation_date":
+                activation_date,
+
+
+            # ==================================================
+            # CERTIFICATE ID
+            # ==================================================
+
+            "certificate_id":
+                certificate_id
         }
 
 
         # ====================================================
-        # SAVE TO DATABASE
+        # SAVE CERTIFICATE
         # ====================================================
 
-        try:
+        con = get_db()
 
-            save_certificate(
+
+        con.execute(
+            """
+            INSERT INTO certificates
+            (
+                id,
+                data,
+                created_at
+            )
+            VALUES
+            (
+                ?,
+                ?,
+                ?
+            )
+            """,
+            (
                 certificate_id,
-                certificate_data
+
+                json.dumps(
+                    certificate_data,
+                    ensure_ascii=False
+                ),
+
+                datetime.now().isoformat(
+                    timespec="seconds"
+                )
             )
+        )
 
-        except Exception as error:
 
-            self.server_error(
-                str(error)
-            )
+        con.commit()
 
-            return
+        con.close()
 
 
         # ====================================================
         # REDIRECT TO CERTIFICATE
         # ====================================================
 
-        self.redirect(
+        self.send_response(
+            303
+        )
+
+        self.send_header(
+            "Location",
             "/certificate/"
             + certificate_id
         )
 
+        self.send_header(
+            "Cache-Control",
+            "no-store"
+        )
+
+        self.end_headers()
+
 
     # ========================================================
-    # LOG
+    # SERVER LOG
     # ========================================================
 
     def log_message(
@@ -1127,8 +985,11 @@ class Handler(
     ):
 
         print(
-            "[SERVER]",
-            format % args
+            "[%s] %s"
+            % (
+                self.log_date_time_string(),
+                format % args
+            )
         )
 
 
@@ -1136,9 +997,100 @@ class Handler(
 # START SERVER
 # ============================================================
 
-def main():
+if __name__ == "__main__":
 
-    init_database()
+    get_db().close()
+
+
+    print()
+
+    print(
+        "=" * 65
+    )
+
+    print(
+        "VLTD CERTIFICATE GENERATOR"
+    )
+
+    print(
+        "=" * 65
+    )
+
+    print()
+
+
+    print(
+        "Manufacturer        :",
+        DEVICE_MANUFACTURER
+    )
+
+    print(
+        "Device Model        :",
+        DEVICE_MODEL
+    )
+
+    print(
+        "SIM Provider        :",
+        SIM_PROVIDER
+    )
+
+    print()
+
+
+    print(
+        "Server Port         :",
+        PORT
+    )
+
+    print()
+
+
+    print(
+        "Open on this computer:"
+    )
+
+    print(
+        f"http://127.0.0.1:{PORT}"
+    )
+
+    print()
+
+
+    print(
+        "QR Base URL:"
+    )
+
+    print(
+        PUBLIC_BASE_URL
+    )
+
+    print()
+
+
+    print(
+        "Device Number Format:"
+    )
+
+    print(
+        "Any length - Alphanumeric only"
+    )
+
+    print()
+
+
+    print(
+        "Press CTRL+C to stop."
+    )
+
+    print()
+
+
+    print(
+        "=" * 65
+    )
+
+    print()
+
 
     server = ThreadingHTTPServer(
         (
@@ -1148,77 +1100,5 @@ def main():
         Handler
     )
 
-    print(
-        ""
-    )
 
-    print(
-        "=============================================="
-    )
-
-    print(
-        " VLTD CERTIFICATE SERVER"
-    )
-
-    print(
-        "=============================================="
-    )
-
-    print(
-        f" Host : {HOST}"
-    )
-
-    print(
-        f" Port : {PORT}"
-    )
-
-    print(
-        f" URL  : http://localhost:{PORT}"
-    )
-
-    print(
-        "=============================================="
-    )
-
-    print(
-        "Device Serial / IMEI / ICCID:"
-    )
-
-    print(
-        "NO 25 CHARACTER LIMIT"
-    )
-
-    print(
-        "ANY LENGTH ALPHANUMERIC VALUE ACCEPTED"
-    )
-
-    print(
-        "=============================================="
-    )
-
-    print(
-        ""
-    )
-
-    try:
-
-        server.serve_forever()
-
-    except KeyboardInterrupt:
-
-        print(
-            "\nServer stopped."
-        )
-
-    finally:
-
-        server.server_close()
-
-
-# ============================================================
-# RUN
-# ============================================================
-
-if __name__ == "__main__":
-
-    main()
+    server.serve_forever()
