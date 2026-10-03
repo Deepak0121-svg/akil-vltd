@@ -77,7 +77,11 @@ document.addEventListener(
 
         /*
         ========================================================
-        ICCID - EXACTLY 19 DIGITS
+        ICCID
+        19 DIGITS + OPTIONAL FINAL F
+        Example:
+        8991430008112624155
+        8991430008112624155F
         ========================================================
         */
 
@@ -86,15 +90,48 @@ document.addEventListener(
             function () {
 
                 let value =
-                    this.value.replace(
-                        /[^0-9]/g,
+                    this.value
+                    .toUpperCase()
+                    .replace(
+                        /[^0-9F]/g,
                         ""
                     );
 
-                this.value =
-                    value.slice(
+
+                /*
+                ------------------------------------------------
+                Keep only the first 19 digits.
+                ------------------------------------------------
+                */
+
+                let digits =
+                    value
+                    .replace(
+                        /F/g,
+                        ""
+                    )
+                    .slice(
                         0,
                         19
+                    );
+
+
+                /*
+                ------------------------------------------------
+                F is allowed ONLY at the end.
+                ------------------------------------------------
+                */
+
+                let hasF =
+                    value.endsWith("F");
+
+
+                this.value =
+                    digits +
+                    (
+                        hasF
+                            ? "F"
+                            : ""
                     );
 
             }
@@ -111,6 +148,12 @@ document.addEventListener(
             "submit",
             function (event) {
 
+
+                /*
+                ------------------------------------------------
+                VEHICLE REGISTRATION VALIDATION
+                ------------------------------------------------
+                */
 
                 const reg =
                     registration.value.trim();
@@ -134,6 +177,12 @@ document.addEventListener(
                 }
 
 
+                /*
+                ------------------------------------------------
+                SERIAL NUMBER
+                ------------------------------------------------
+                */
+
                 const serial =
                     document
                     .getElementById(
@@ -143,13 +192,31 @@ document.addEventListener(
                     .trim();
 
 
+                /*
+                ------------------------------------------------
+                IMEI
+                ------------------------------------------------
+                */
+
                 const imeiValue =
                     imei.value.trim();
 
 
+                /*
+                ------------------------------------------------
+                ICCID
+                ------------------------------------------------
+                */
+
                 const iccidValue =
                     iccid.value.trim();
 
+
+                /*
+                ------------------------------------------------
+                REQUIRED FIELD VALIDATION
+                ------------------------------------------------
+                */
 
                 if (!serial) {
 
@@ -219,12 +286,12 @@ document.addEventListener(
                 /*
                 ====================================================
                 ICCID VALIDATION
-                EXACTLY 19 DIGITS
+                19 DIGITS + OPTIONAL FINAL F
                 ====================================================
                 */
 
                 if (
-                    !/^[0-9]{19}$/.test(
+                    !/^[0-9]{19}F?$/.test(
                         iccidValue
                     )
                 ) {
@@ -232,7 +299,7 @@ document.addEventListener(
                     event.preventDefault();
 
                     alert(
-                        "ICCID Number must contain exactly 19 digits."
+                        "ICCID Number must contain 19 digits, with an optional final F."
                     );
 
                     iccid.focus();
@@ -241,8 +308,17 @@ document.addEventListener(
 
                 }
 
+
+                /*
+                ====================================================
+                ALL VALID
+                FORM WILL SUBMIT NORMALLY
+                ====================================================
+                */
+
             }
         );
 
     }
 );
+
