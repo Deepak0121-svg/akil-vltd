@@ -1,3 +1,4 @@
+
 document.addEventListener(
     "DOMContentLoaded",
     function () {
@@ -76,7 +77,7 @@ document.addEventListener(
 
         /*
         ========================================================
-        ICCID - NUMBERS ONLY
+        ICCID - EXACTLY 19 DIGITS
         ========================================================
         */
 
@@ -84,10 +85,16 @@ document.addEventListener(
             "input",
             function () {
 
-                this.value =
+                let value =
                     this.value.replace(
                         /[^0-9]/g,
                         ""
+                    );
+
+                this.value =
+                    value.slice(
+                        0,
+                        19
                     );
 
             }
@@ -183,6 +190,13 @@ document.addEventListener(
                 }
 
 
+                /*
+                ====================================================
+                IMEI VALIDATION
+                NUMBERS ONLY
+                ====================================================
+                */
+
                 if (
                     !/^[0-9]+$/.test(
                         imeiValue
@@ -195,13 +209,22 @@ document.addEventListener(
                         "IMEI Number must contain numbers only."
                     );
 
+                    imei.focus();
+
                     return;
 
                 }
 
 
+                /*
+                ====================================================
+                ICCID VALIDATION
+                EXACTLY 19 DIGITS
+                ====================================================
+                */
+
                 if (
-                    !/^[0-9]+$/.test(
+                    !/^[0-9]{19}$/.test(
                         iccidValue
                     )
                 ) {
@@ -209,8 +232,10 @@ document.addEventListener(
                     event.preventDefault();
 
                     alert(
-                        "ICCID Number must contain numbers only."
+                        "ICCID Number must contain exactly 19 digits."
                     );
+
+                    iccid.focus();
 
                     return;
 
