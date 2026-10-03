@@ -1,3 +1,4 @@
+
 import json
 import os
 import sqlite3
@@ -15,15 +16,33 @@ import qrcode
 # CONFIGURATION
 # ============================================================
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
 
-DATA_DIR = os.path.join(BASE_DIR, "data")
-STATIC_DIR = os.path.join(BASE_DIR, "static")
+DATA_DIR = os.path.join(
+    BASE_DIR,
+    "data"
+)
 
-DB = os.path.join(DATA_DIR, "certificates.db")
+STATIC_DIR = os.path.join(
+    BASE_DIR,
+    "static"
+)
+
+DB = os.path.join(
+    DATA_DIR,
+    "certificates.db"
+)
 
 HOST = "0.0.0.0"
-PORT = int(os.environ.get("PORT", "8090"))
+
+PORT = int(
+    os.environ.get(
+        "PORT",
+        "8090"
+    )
+)
 
 
 # ============================================================
@@ -45,6 +64,7 @@ PUBLIC_BASE_URL = "https://akil-vltd.onrender.com"
 # ============================================================
 
 DEVICE_MANUFACTURER = "AKIL ENTERPRISES"
+
 DEVICE_MODEL = "AKEEL 140"
 
 SIM_PROVIDER = "Navspire"
@@ -68,7 +88,9 @@ os.makedirs(
 
 def get_db():
 
-    con = sqlite3.connect(DB)
+    con = sqlite3.connect(
+        DB
+    )
 
     con.row_factory = sqlite3.Row
 
@@ -267,9 +289,7 @@ class Handler(
                 1
             )[-1]
 
-
             con = get_db()
-
 
             row = con.execute(
                 """
@@ -281,7 +301,6 @@ class Handler(
                     certificate_id,
                 )
             ).fetchone()
-
 
             con.close()
 
@@ -355,9 +374,7 @@ class Handler(
                 1
             )[-1]
 
-
             con = get_db()
-
 
             row = con.execute(
                 """
@@ -369,7 +386,6 @@ class Handler(
                     certificate_id,
                 )
             ).fetchone()
-
 
             con.close()
 
@@ -577,7 +593,7 @@ class Handler(
 
 
         # ====================================================
-        # DEVICE VALIDATION
+        # DEVICE REQUIRED VALIDATION
         # ====================================================
 
         if not device_serial:
@@ -618,58 +634,89 @@ class Handler(
 
         # ====================================================
         # SERIAL NUMBER
-        # Letters and numbers only
-        # EXACTLY 15 CHARACTERS
+        # EXACTLY 25 ALPHANUMERIC CHARACTERS
         # ====================================================
 
+        device_serial = (
+            device_serial
+            .strip()
+            .upper()
+        )
+
+
         if (
-            len(device_serial) != 15
+
+            len(device_serial) != 25
+
             or not device_serial.isalnum()
+
         ):
 
             send_response(
                 self,
                 400,
                 "text/plain; charset=utf-8",
-                b"Serial Number must contain exactly 15 letters/numbers."
+                b"Serial Number must contain exactly 25 letters/numbers."
             )
 
             return
 
 
         # ====================================================
-        # IMEI
-        # Numbers only
+        # IMEI NUMBER
+        # EXACTLY 25 ALPHANUMERIC CHARACTERS
         # ====================================================
 
-        if not device_imei.isdigit():
+        device_imei = (
+            device_imei
+            .strip()
+            .upper()
+        )
 
-            send_response(
-                self,
-                400,
-                "text/plain; charset=utf-8",
-                b"IMEI Number must contain numbers only."
-            )
-
-            return
-
-
-        # ====================================================
-        # ICCID
-        # Letters and numbers only
-        # EXACTLY 20 CHARACTERS
-        # ====================================================
 
         if (
-            len(device_iccid) != 20
-            or not device_iccid.isalnum()
+
+            len(device_imei) != 25
+
+            or not device_imei.isalnum()
+
         ):
 
             send_response(
                 self,
                 400,
                 "text/plain; charset=utf-8",
-                b"ICCID must contain exactly 20 letters/numbers."
+                b"IMEI Number must contain exactly 25 letters/numbers."
+            )
+
+            return
+
+
+        # ====================================================
+        # ICCID NUMBER
+        # EXACTLY 25 ALPHANUMERIC CHARACTERS
+        # ====================================================
+
+        device_iccid = (
+            device_iccid
+            .strip()
+            .upper()
+        )
+
+
+        if (
+
+            len(device_iccid) != 25
+
+            or not device_iccid.isalnum()
+
+        ):
+
+            send_response(
+                self,
+                400,
+                "text/plain; charset=utf-8",
+                b"ICCID Number must contain exactly 25 letters/numbers."
             )
 
             return
@@ -748,8 +795,10 @@ class Handler(
             },
 
 
+            # ----------------------------------------------
             # Keep these flat fields for compatibility
             # with any older certificate template.
+            # ----------------------------------------------
 
             "device_manufacturer":
                 DEVICE_MANUFACTURER,
@@ -975,3 +1024,4 @@ if __name__ == "__main__":
 
 
     server.serve_forever()
+

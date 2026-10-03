@@ -16,6 +16,12 @@ document.addEventListener(
             );
 
 
+        const serial =
+            document.getElementById(
+                "device_serial"
+            );
+
+
         const imei =
             document.getElementById(
                 "device_imei"
@@ -28,7 +34,7 @@ document.addEventListener(
             );
 
 
-        /*
+        /* 
         ========================================================
         VEHICLE REGISTRATION
         EXACTLY 10 ALPHANUMERIC CHARACTERS
@@ -55,90 +61,60 @@ document.addEventListener(
         );
 
 
-        /*
+        /* 
         ========================================================
-        IMEI - NUMBERS ONLY
-        ========================================================
-        */
-
-        imei.addEventListener(
-            "input",
-            function () {
-
-                this.value =
-                    this.value.replace(
-                        /[^0-9]/g,
-                        ""
-                    );
-
-            }
-        );
-
-
-        /*
-        ========================================================
-        ICCID
-        19 DIGITS + OPTIONAL FINAL F
-        Example:
-        8991430008112624155
-        8991430008112624155F
+        DEVICE FIELD CLEANER
+        SERIAL / IMEI / ICCID
+        EXACTLY 25 ALPHANUMERIC CHARACTERS
         ========================================================
         */
 
-        iccid.addEventListener(
-            "input",
-            function () {
+        function cleanDeviceField(
+            field
+        ) {
 
-                let value =
-                    this.value
-                    .toUpperCase()
-                    .replace(
-                        /[^0-9F]/g,
-                        ""
-                    );
+            field.addEventListener(
+                "input",
+                function () {
 
+                    this.value =
+                        this.value
+                        .replace(
+                            /[^a-zA-Z0-9]/g,
+                            ""
+                        )
+                        .toUpperCase()
+                        .slice(
+                            0,
+                            25
+                        );
 
-                /*
-                ------------------------------------------------
-                Keep only the first 19 digits.
-                ------------------------------------------------
-                */
+                }
+            );
 
-                let digits =
-                    value
-                    .replace(
-                        /F/g,
-                        ""
-                    )
-                    .slice(
-                        0,
-                        19
-                    );
-
-
-                /*
-                ------------------------------------------------
-                F is allowed ONLY at the end.
-                ------------------------------------------------
-                */
-
-                let hasF =
-                    value.endsWith("F");
-
-
-                this.value =
-                    digits +
-                    (
-                        hasF
-                            ? "F"
-                            : ""
-                    );
-
-            }
-        );
+        }
 
 
         /*
+        --------------------------------------------------------
+        APPLY TO ALL THREE DEVICE FIELDS
+        --------------------------------------------------------
+        */
+
+        cleanDeviceField(
+            serial
+        );
+
+        cleanDeviceField(
+            imei
+        );
+
+        cleanDeviceField(
+            iccid
+        );
+
+
+        /* 
         ========================================================
         FORM VALIDATION
         ========================================================
@@ -149,9 +125,9 @@ document.addEventListener(
             function (event) {
 
 
-                /*
+                /* 
                 ------------------------------------------------
-                VEHICLE REGISTRATION VALIDATION
+                VEHICLE REGISTRATION
                 ------------------------------------------------
                 */
 
@@ -160,8 +136,9 @@ document.addEventListener(
 
 
                 if (
-                    reg.length !== 10 ||
-                    !/^[A-Z0-9]{10}$/.test(reg)
+                    !/^[A-Z0-9]{10}$/.test(
+                        reg
+                    )
                 ) {
 
                     event.preventDefault();
@@ -177,54 +154,39 @@ document.addEventListener(
                 }
 
 
-                /*
+                /* 
                 ------------------------------------------------
-                SERIAL NUMBER
-                ------------------------------------------------
-                */
-
-                const serial =
-                    document
-                    .getElementById(
-                        "device_serial"
-                    )
-                    .value
-                    .trim();
-
-
-                /*
-                ------------------------------------------------
-                IMEI
+                DEVICE VALUES
                 ------------------------------------------------
                 */
+
+                const serialValue =
+                    serial.value.trim();
+
 
                 const imeiValue =
                     imei.value.trim();
 
 
-                /*
-                ------------------------------------------------
-                ICCID
-                ------------------------------------------------
-                */
-
                 const iccidValue =
                     iccid.value.trim();
 
 
-                /*
+                /* 
                 ------------------------------------------------
                 REQUIRED FIELD VALIDATION
                 ------------------------------------------------
                 */
 
-                if (!serial) {
+                if (!serialValue) {
 
                     event.preventDefault();
 
                     alert(
                         "Please enter Serial Number."
                     );
+
+                    serial.focus();
 
                     return;
 
@@ -239,6 +201,8 @@ document.addEventListener(
                         "Please enter IMEI Number."
                     );
 
+                    imei.focus();
+
                     return;
 
                 }
@@ -252,20 +216,48 @@ document.addEventListener(
                         "Please enter ICCID Number."
                     );
 
+                    iccid.focus();
+
                     return;
 
                 }
 
 
-                /*
+                /* 
                 ====================================================
-                IMEI VALIDATION
-                NUMBERS ONLY
+                SERIAL NUMBER VALIDATION
+                EXACTLY 25 ALPHANUMERIC CHARACTERS
                 ====================================================
                 */
 
                 if (
-                    !/^[0-9]+$/.test(
+                    !/^[A-Z0-9]{25}$/.test(
+                        serialValue
+                    )
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Serial Number must contain exactly 25 letters/numbers."
+                    );
+
+                    serial.focus();
+
+                    return;
+
+                }
+
+
+                /* 
+                ====================================================
+                IMEI VALIDATION
+                EXACTLY 25 ALPHANUMERIC CHARACTERS
+                ====================================================
+                */
+
+                if (
+                    !/^[A-Z0-9]{25}$/.test(
                         imeiValue
                     )
                 ) {
@@ -273,7 +265,7 @@ document.addEventListener(
                     event.preventDefault();
 
                     alert(
-                        "IMEI Number must contain numbers only."
+                        "IMEI Number must contain exactly 25 letters/numbers."
                     );
 
                     imei.focus();
@@ -283,15 +275,15 @@ document.addEventListener(
                 }
 
 
-                /*
+                /* 
                 ====================================================
                 ICCID VALIDATION
-                19 DIGITS + OPTIONAL FINAL F
+                EXACTLY 25 ALPHANUMERIC CHARACTERS
                 ====================================================
                 */
 
                 if (
-                    !/^[0-9]{19}F?$/.test(
+                    !/^[A-Z0-9]{25}$/.test(
                         iccidValue
                     )
                 ) {
@@ -299,7 +291,7 @@ document.addEventListener(
                     event.preventDefault();
 
                     alert(
-                        "ICCID Number must contain 19 digits, with an optional final F."
+                        "ICCID Number must contain exactly 25 letters/numbers."
                     );
 
                     iccid.focus();
@@ -309,7 +301,7 @@ document.addEventListener(
                 }
 
 
-                /*
+                /* 
                 ====================================================
                 ALL VALID
                 FORM WILL SUBMIT NORMALLY

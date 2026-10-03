@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -76,6 +75,7 @@
                         minlength="10"
                         pattern="[A-Za-z0-9]{10}"
                         placeholder="Example: TN57AB1234"
+                        autocomplete="off"
                         required
                     >
 
@@ -199,6 +199,10 @@
             <div class="form-grid">
 
 
+                <!-- =============================== -->
+                <!-- SERIAL NUMBER -->
+                <!-- =============================== -->
+
                 <div class="field">
 
                     <label>
@@ -209,15 +213,24 @@
                         type="text"
                         name="device_serial"
                         id="device_serial"
-                        maxlength="15"
-                        minlength="15"
-                        pattern="[A-Za-z0-9]{15}"
-                        placeholder="Enter 15-character Serial Number"
+                        maxlength="25"
+                        minlength="25"
+                        pattern="[A-Za-z0-9]{25}"
+                        placeholder="Enter 25-character Serial Number"
+                        autocomplete="off"
                         required
                     >
 
+                    <small>
+                        Exactly 25 letters/numbers
+                    </small>
+
                 </div>
 
+
+                <!-- =============================== -->
+                <!-- IMEI NUMBER -->
+                <!-- =============================== -->
 
                 <div class="field">
 
@@ -229,16 +242,24 @@
                         type="text"
                         name="device_imei"
                         id="device_imei"
-                        inputmode="numeric"
-                        maxlength="15"
-                        minlength="15"
-                        pattern="[0-9]{15}"
-                        placeholder="Enter 15-digit IMEI Number"
+                        maxlength="25"
+                        minlength="25"
+                        pattern="[A-Za-z0-9]{25}"
+                        placeholder="Enter 25-character IMEI Number"
+                        autocomplete="off"
                         required
                     >
 
+                    <small>
+                        Exactly 25 letters/numbers
+                    </small>
+
                 </div>
 
+
+                <!-- =============================== -->
+                <!-- ICCID NUMBER -->
+                <!-- =============================== -->
 
                 <div class="field">
 
@@ -250,21 +271,24 @@
                         type="text"
                         name="device_iccid"
                         id="device_iccid"
-                        inputmode="text"
-                        maxlength="20"
-                        minlength="19"
-                        pattern="[0-9]{19}F?"
-                        placeholder="Example: 8991430008112624155F"
+                        maxlength="25"
+                        minlength="25"
+                        pattern="[A-Za-z0-9]{25}"
+                        placeholder="Enter 25-character ICCID Number"
                         autocomplete="off"
                         required
                     >
 
                     <small>
-                        19 digits, optionally followed by F
+                        Exactly 25 letters/numbers
                     </small>
 
                 </div>
 
+
+                <!-- =============================== -->
+                <!-- DEVICE MODEL -->
+                <!-- =============================== -->
 
                 <div class="field">
 
@@ -282,6 +306,10 @@
                 </div>
 
 
+                <!-- =============================== -->
+                <!-- SIM SERVICE PROVIDER -->
+                <!-- =============================== -->
+
                 <div class="field">
 
                     <label>
@@ -297,6 +325,10 @@
 
                 </div>
 
+
+                <!-- =============================== -->
+                <!-- SIM VALIDITY -->
+                <!-- =============================== -->
 
                 <div class="field">
 
@@ -350,4 +382,3 @@
 </body>
 
 </html>
-
