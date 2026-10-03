@@ -8,24 +8,20 @@ document.addEventListener(
                 "certificateForm"
             );
 
-
         const registration =
             document.getElementById(
                 "vehicle_registration"
             );
-
 
         const serial =
             document.getElementById(
                 "device_serial"
             );
 
-
         const imei =
             document.getElementById(
                 "device_imei"
             );
-
 
         const iccid =
             document.getElementById(
@@ -64,7 +60,7 @@ document.addEventListener(
         ========================================================
         DEVICE FIELD CLEANER
         SERIAL / IMEI / ICCID
-        ANY LENGTH
+        NO LENGTH LIMIT
         ALPHANUMERIC ONLY
         ========================================================
         */
@@ -93,7 +89,7 @@ document.addEventListener(
 
         /*
         ========================================================
-        APPLY TO DEVICE FIELDS
+        APPLY DEVICE CLEANER
         ========================================================
         */
 
@@ -101,11 +97,9 @@ document.addEventListener(
             serial
         );
 
-
         cleanDeviceField(
             imei
         );
-
 
         cleanDeviceField(
             iccid
@@ -114,7 +108,7 @@ document.addEventListener(
 
         /*
         ========================================================
-        FORM VALIDATION
+        FORM SUBMIT VALIDATION
         ========================================================
         */
 
@@ -126,6 +120,7 @@ document.addEventListener(
                 /*
                 ------------------------------------------------
                 VEHICLE REGISTRATION
+                EXACTLY 10 CHARACTERS
                 ------------------------------------------------
                 */
 
@@ -236,7 +231,7 @@ document.addEventListener(
                 /*
                 ====================================================
                 SERIAL NUMBER
-                ANY LENGTH
+                NO LENGTH VALIDATION
                 ALPHANUMERIC ONLY
                 ====================================================
                 */
@@ -263,7 +258,7 @@ document.addEventListener(
                 /*
                 ====================================================
                 IMEI NUMBER
-                ANY LENGTH
+                NO LENGTH VALIDATION
                 ALPHANUMERIC ONLY
                 ====================================================
                 */
@@ -290,7 +285,7 @@ document.addEventListener(
                 /*
                 ====================================================
                 ICCID NUMBER
-                ANY LENGTH
+                NO LENGTH VALIDATION
                 ALPHANUMERIC ONLY
                 ====================================================
                 */
@@ -317,7 +312,7 @@ document.addEventListener(
                 /*
                 ====================================================
                 ALL VALID
-                FORM WILL SUBMIT NORMALLY
+                CERTIFICATE WILL BE CREATED
                 ====================================================
                 */
 
