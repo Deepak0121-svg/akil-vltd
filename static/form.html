@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -230,7 +230,10 @@
                         name="device_imei"
                         id="device_imei"
                         inputmode="numeric"
-                        placeholder="Enter IMEI Number"
+                        maxlength="15"
+                        minlength="15"
+                        pattern="[0-9]{15}"
+                        placeholder="Enter 15-digit IMEI Number"
                         required
                     >
 
@@ -247,13 +250,18 @@
                         type="text"
                         name="device_iccid"
                         id="device_iccid"
-                        inputmode="numeric"
-                        maxlength="19"
+                        inputmode="text"
+                        maxlength="20"
                         minlength="19"
-                        pattern="[0-9]{19}"
-                        placeholder="Enter 19-digit ICCID Number"
+                        pattern="[0-9]{19}F?"
+                        placeholder="Example: 8991430008112624155F"
+                        autocomplete="off"
                         required
                     >
+
+                    <small>
+                        19 digits, optionally followed by F
+                    </small>
 
                 </div>
 
