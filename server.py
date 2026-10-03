@@ -1,3 +1,4 @@
+
 import json
 import os
 import sqlite3
@@ -213,6 +214,7 @@ def is_alphanumeric(
     """
 
     if not value:
+
         return False
 
     return (
@@ -538,17 +540,12 @@ class Handler(
 
 
         # ====================================================
-        # EXACTLY 10 ALPHANUMERIC CHARACTERS
+        # VEHICLE REGISTRATION NUMBER
+        # ANY LENGTH - ALPHANUMERIC ONLY
         # ====================================================
 
-        if (
-            len(
-                registration_number
-            ) != 10
-            or not (
-                registration_number.isascii()
-                and registration_number.isalnum()
-            )
+        if not is_alphanumeric(
+            registration_number
         ):
 
             send_response(
@@ -556,8 +553,8 @@ class Handler(
                 400,
                 "text/plain; charset=utf-8",
                 (
-                    b"Vehicle Registration Number "
-                    b"must be exactly 10 letters/numbers."
+                    b"Vehicle Registration Number must contain "
+                    b"only letters and numbers."
                 )
             )
 
@@ -643,7 +640,6 @@ class Handler(
             .upper()
         )
 
-
         device_imei = (
             clean_value(
                 form,
@@ -651,7 +647,6 @@ class Handler(
             )
             .upper()
         )
-
 
         device_iccid = (
             clean_value(
@@ -1068,6 +1063,17 @@ if __name__ == "__main__":
 
 
     print(
+        "Vehicle Registration Format:"
+    )
+
+    print(
+        "Any length - Alphanumeric only"
+    )
+
+    print()
+
+
+    print(
         "Device Number Format:"
     )
 
@@ -1102,3 +1108,4 @@ if __name__ == "__main__":
 
 
     server.serve_forever()
+

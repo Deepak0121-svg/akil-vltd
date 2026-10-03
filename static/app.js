@@ -32,7 +32,7 @@ document.addEventListener(
         /*
         ========================================================
         VEHICLE REGISTRATION
-        EXACTLY 10 ALPHANUMERIC CHARACTERS
+        ANY LENGTH - ALPHANUMERIC ONLY
         ========================================================
         */
 
@@ -46,11 +46,7 @@ document.addEventListener(
                         /[^a-zA-Z0-9]/g,
                         ""
                     )
-                    .toUpperCase()
-                    .slice(
-                        0,
-                        10
-                    );
+                    .toUpperCase();
 
             }
         );
@@ -60,8 +56,7 @@ document.addEventListener(
         ========================================================
         DEVICE FIELD CLEANER
         SERIAL / IMEI / ICCID
-        NO LENGTH LIMIT
-        ALPHANUMERIC ONLY
+        ANY LENGTH - ALPHANUMERIC ONLY
         ========================================================
         */
 
@@ -120,7 +115,8 @@ document.addEventListener(
                 /*
                 ------------------------------------------------
                 VEHICLE REGISTRATION
-                EXACTLY 10 CHARACTERS
+                ANY LENGTH
+                ALPHANUMERIC ONLY
                 ------------------------------------------------
                 */
 
@@ -129,7 +125,7 @@ document.addEventListener(
 
 
                 if (
-                    !/^[A-Z0-9]{10}$/.test(
+                    !/^[A-Z0-9]+$/.test(
                         reg
                     )
                 ) {
@@ -137,7 +133,7 @@ document.addEventListener(
                     event.preventDefault();
 
                     alert(
-                        "Vehicle Registration Number must contain exactly 10 letters/numbers."
+                        "Vehicle Registration Number must contain only letters and numbers."
                     );
 
                     registration.focus();
@@ -231,7 +227,7 @@ document.addEventListener(
                 /*
                 ====================================================
                 SERIAL NUMBER
-                NO LENGTH VALIDATION
+                ANY LENGTH
                 ALPHANUMERIC ONLY
                 ====================================================
                 */
@@ -258,7 +254,7 @@ document.addEventListener(
                 /*
                 ====================================================
                 IMEI NUMBER
-                NO LENGTH VALIDATION
+                ANY LENGTH
                 ALPHANUMERIC ONLY
                 ====================================================
                 */
@@ -285,7 +281,7 @@ document.addEventListener(
                 /*
                 ====================================================
                 ICCID NUMBER
-                NO LENGTH VALIDATION
+                ANY LENGTH
                 ALPHANUMERIC ONLY
                 ====================================================
                 */
